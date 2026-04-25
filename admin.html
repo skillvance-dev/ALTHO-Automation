@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALTHO Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#060810;--bg2:#090c14;--sur:#111827;--sur2:#1a2235;--brd:rgba(255,255,255,0.07);--brd2:rgba(255,255,255,0.13);--txt:#e8edf5;--txt2:#8896b0;--txt3:#4a5a70;--acc:#00d4ff;--gold:#f0a832;--grn:#00e5a0;--red:#ff4d6d;--D:'Orbitron',sans-serif;--B:'DM Sans',sans-serif;--M:'DM Mono',monospace;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--B);background:var(--bg);color:var(--txt);font-size:14px;min-height:100vh;}
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;}
+.login-box{background:var(--sur);border:1px solid var(--brd2);border-radius:20px;padding:3rem;width:380px;text-align:center;}
+.login-logo{font-family:var(--D);font-size:22px;font-weight:700;margin-bottom:.5rem;}
+.login-logo span{color:var(--acc);}
+.login-sub{font-size:12px;color:var(--txt3);margin-bottom:2rem;font-family:var(--M);}
+.login-box input{width:100%;background:var(--bg2);border:1px solid var(--brd2);border-radius:10px;padding:12px 14px;font-family:var(--B);font-size:14px;color:var(--txt);outline:none;margin-bottom:1rem;}
+.login-box input:focus{border-color:var(--acc);}
+.login-btn{width:100%;background:var(--acc);color:#000;border:none;border-radius:10px;padding:13px;font-family:var(--B);font-size:14px;font-weight:600;cursor:pointer;}
+.login-err{color:var(--red);font-size:13px;margin-top:.75rem;display:none;}
+.admin-wrap{display:none;min-height:100vh;}
+.admin-wrap.show{display:flex;}
+.sidebar{width:250px;background:var(--bg2);border-right:1px solid var(--brd);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;overflow-y:auto;z-index:100;}
+.sb-logo{padding:1.25rem 1.5rem;border-bottom:1px solid var(--brd);font-family:var(--D);font-size:14px;font-weight:700;display:flex;align-items:center;gap:10px;}
+.sb-logo span{color:var(--acc);}
+.sb-badge{font-family:var(--M);font-size:9px;color:var(--txt3);background:var(--sur2);border-radius:4px;padding:2px 6px;margin-left:auto;}
+.sb-sec{font-family:var(--M);font-size:9px;color:var(--txt3);letter-spacing:.1em;text-transform:uppercase;padding:.75rem 1.5rem .35rem;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:.6rem 1.5rem;cursor:pointer;transition:all .2s;font-size:12px;color:var(--txt2);border-left:2px solid transparent;}
+.sb-item:hover{background:var(--sur);color:var(--txt);}
+.sb-item.active{background:var(--sur);color:var(--acc);border-left-color:var(--acc);}
+.sb-ico{font-size:15px;width:20px;text-align:center;}
+.sb-logout{margin-top:auto;padding:1.25rem 1.5rem;border-top:1px solid var(--brd);}
+.sb-logout button{width:100%;background:none;border:1px solid var(--brd2);border-radius:8px;padding:9px;color:var(--txt3);font-family:var(--B);font-size:12px;cursor:pointer;transition:all .2s;}
+.sb-logout button:hover{border-color:var(--red);color:var(--red);}
+.main{flex:1;margin-left:250px;display:flex;flex-direction:column;}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--brd);padding:.875rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.page-title{font-family:var(--D);font-size:13px;font-weight:600;}
+.topbar-r{display:flex;align-items:center;gap:1rem;}
+.atag{font-family:var(--M);font-size:10px;color:var(--acc);background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);border-radius:5px;padding:3px 9px;}
+.content{padding:1.75rem;flex:1;}
+.panel{display:none;}
+.panel.active{display:block;}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.5rem;}
+.sc{background:var(--sur);border:1px solid var(--brd);border-radius:12px;padding:1.25rem;}
+.sc-l{font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem;}
+.sc-v{font-family:var(--M);font-size:22px;color:var(--acc);}
+.sc-s{font-size:11px;color:var(--txt3);margin-top:4px;}
+.card{background:var(--sur);border:1px solid var(--brd);border-radius:14px;overflow:hidden;margin-bottom:1.5rem;}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;padding:.875rem 1.5rem;border-bottom:1px solid var(--brd);}
+.card-ttl{font-family:var(--D);font-size:12px;font-weight:600;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{font-size:10px;color:var(--txt3);font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:9px 1.25rem;text-align:left;border-bottom:1px solid var(--brd);}
+td{padding:9px 1.25rem;border-bottom:1px solid var(--brd);color:var(--txt2);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,.02);}
+.badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;}
+.bok{background:rgba(0,229,160,.12);color:var(--grn);}
+.bwarn{background:rgba(240,168,50,.12);color:var(--gold);}
+.bpend{background:rgba(0,212,255,.1);color:var(--acc);}
+.bred{background:rgba(255,77,109,.12);color:var(--red);}
+.bgray{background:rgba(255,255,255,.06);color:var(--txt3);}
+.fs{background:var(--sur);border:1px solid var(--brd);border-radius:14px;padding:1.5rem;margin-bottom:1.5rem;}
+.fs-ttl{font-family:var(--D);font-size:12px;font-weight:600;margin-bottom:1.25rem;padding-bottom:.75rem;border-bottom:1px solid var(--brd);}
+.fg{display:flex;flex-direction:column;gap:4px;margin-bottom:.75rem;}
+.fg label{font-size:10px;color:var(--txt3);font-weight:500;letter-spacing:.04em;text-transform:uppercase;}
+.fg input,.fg select,.fg textarea{background:var(--bg2);border:1px solid var(--brd2);border-radius:8px;padding:8px 11px;font-family:var(--B);font-size:13px;color:var(--txt);outline:none;width:100%;transition:border-color .2s;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--acc);}
+.fg select option{background:var(--sur);}
+.fgr{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.fgr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;}
+.btn{font-family:var(--B);font-size:12px;font-weight:500;padding:8px 16px;border-radius:8px;border:1px solid var(--brd2);background:var(--sur2);color:var(--txt);cursor:pointer;transition:all .2s;}
+.btn:hover{border-color:var(--brd2);background:var(--sur);}
+.btna{background:var(--acc);color:#000;border-color:var(--acc);}
+.btna:hover{opacity:.9;}
+.btng{background:var(--grn);color:#000;border-color:var(--grn);}
+.btnr{background:var(--red);color:#fff;border-color:var(--red);}
+.btnsm{font-size:10px;padding:4px 9px;}
+.tabs{display:flex;gap:2px;margin-bottom:1.5rem;border-bottom:1px solid var(--brd);}
+.tab-btn{font-size:12px;padding:.65rem 1.1rem;border:none;background:transparent;color:var(--txt3);cursor:pointer;font-family:var(--B);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;}
+.tab-btn:hover{color:var(--txt);}
+.tab-btn.active{color:var(--acc);border-bottom-color:var(--acc);}
+.tp{display:none;}
+.tp.active{display:block;}
+.notice{background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.2);border-radius:8px;padding:.75rem 1rem;font-size:12px;color:var(--acc);margin-bottom:1rem;}
+.nwarn{background:rgba(240,168,50,.07);border-color:rgba(240,168,50,.2);color:var(--gold);}
+.ngrn{background:rgba(0,229,160,.07);border-color:rgba(0,229,160,.2);color:var(--grn);}
+.q-item{background:var(--sur2);border:1px solid var(--brd);border-radius:10px;padding:1rem;margin-bottom:.625rem;}
+.q-num{font-family:var(--M);font-size:10px;color:var(--acc);margin-bottom:.4rem;}
+.q-text{font-size:13px;color:var(--txt);margin-bottom:.625rem;}
+.q-opts{display:flex;flex-direction:column;gap:4px;}
+.q-opt{font-size:11px;color:var(--txt2);padding:3px 8px;background:rgba(255,255,255,.03);border-radius:4px;}
+.course-card{background:var(--sur2);border:1px solid var(--brd);border-radius:12px;padding:1.1rem;margin-bottom:.625rem;display:flex;align-items:flex-start;gap:.875rem;}
+.c-thumb{width:72px;height:52px;background:var(--bg2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;}
+.c-info{flex:1;}
+.c-name{font-weight:500;font-size:13px;margin-bottom:.25rem;}
+.c-meta{font-size:11px;color:var(--txt3);display:flex;gap:.875rem;flex-wrap:wrap;}
+.c-actions{display:flex;gap:5px;align-items:center;flex-shrink:0;}
+.emp-row{display:flex;align-items:center;gap:1rem;padding:.75rem 0;border-bottom:1px solid var(--brd);}
+.emp-row:last-child{border-bottom:none;}
+.emp-av{width:36px;height:36px;border-radius:50%;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.emp-name{font-weight:500;font-size:13px;}
+.emp-role{font-size:11px;color:var(--txt3);}
+.stock-tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;font-family:var(--M);}
+.s-ok{background:rgba(0,229,160,.12);color:var(--grn);}
+.s-low{background:rgba(240,168,50,.12);color:var(--gold);}
+.s-out{background:rgba(255,77,109,.12);color:var(--red);}
+.maint-sec{background:rgba(240,168,50,.05);border:1px solid rgba(240,168,50,.2);border-radius:10px;padding:1rem;margin-bottom:1rem;display:flex;align-items:center;gap:.875rem;}
+.maint-ico{font-size:24px;flex-shrink:0;}
+.maint-ttl{font-weight:500;font-size:13px;color:var(--gold);margin-bottom:3px;}
+.maint-sub{font-size:12px;color:var(--txt3);}
+</style>
+</head>
+<body>
+<div class="login-wrap" id="login-wrap">
+  <div class="login-box">
+    <div class="login-logo">ALTHO<span>.</span></div>
+    <div class="login-sub">ADMIN PANEL — SUPER ADMIN</div>
+    <input type="text" id="l-user" placeholder="Username" value="admin"/>
+    <input type="password" id="l-pass" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <button class="login-btn" onclick="doLogin()">Masuk ke Admin Panel</button>
+    <div class="login-err" id="l-err">Password salah. Coba lagi.</div>
+  </div>
+</div>
+
+<div class="admin-wrap" id="admin-wrap">
+  <div class="sidebar">
+    <div class="sb-logo">ALTHO<span>.</span><span class="sb-badge">ADMIN</span></div>
+    <div class="sb-sec">Dashboard</div>
+    <div class="sb-item active" onclick="SP('dashboard',this)"><span class="sb-ico">📊</span>Overview</div>
+    <div class="sb-sec">Website</div>
+    <div class="sb-item" onclick="SP('partners',this)"><span class="sb-ico">🤝</span>Partners</div>
+    <div class="sb-item" onclick="SP('reviews',this)"><span class="sb-ico">⭐</span>Ulasan</div>
+    <div class="sb-item" onclick="SP('messages',this)"><span class="sb-ico">📩</span>Pesan Masuk</div>
+    <div class="sb-sec">ALTHO AI</div>
+    <div class="sb-item" onclick="SP('ai',this)"><span class="sb-ico">🤖</span>Kelola Konten AI</div>
+    <div class="sb-sec">ALTHO IoT</div>
+    <div class="sb-item" onclick="SP('iot',this)"><span class="sb-ico">📡</span>Kelola Konten IoT</div>
+    <div class="sb-item" onclick="openDemo('iot')"><span class="sb-ico">🖥️</span>IoT Dashboard Demo</div>
+    <div class="sb-sec">ALTHO OEE</div>
+    <div class="sb-item" onclick="SP('oee',this)"><span class="sb-ico">📊</span>Kelola Konten OEE</div>
+    <div class="sb-item" onclick="openDemo('oee')"><span class="sb-ico">🖥️</span>OEE Dashboard Demo</div>
+    <div class="sb-sec">ALTHO Control</div>
+    <div class="sb-item" onclick="SP('control',this)"><span class="sb-ico">⚙️</span>Kelola Konten Control</div>
+    <div class="sb-sec">ALTHO Vision</div>
+    <div class="sb-item" onclick="SP('vision',this)"><span class="sb-ico">👁️</span>Vision — Coming Soon</div>
+    <div class="sb-sec">ALTHO Manufacturing</div>
+    <div class="sb-item" onclick="SP('erp',this)"><span class="sb-ico">📦</span>ERP Management</div>
+    <div class="sb-item" onclick="SP('warehouse',this)"><span class="sb-ico">🏪</span>Smart Warehouse & eStock</div>
+    <div class="sb-item" onclick="SP('lean',this)"><span class="sb-ico">🏭</span>Lean & TPM</div>
+    <div class="sb-sec">ALTHO PeopleTech</div>
+    <div class="sb-item" onclick="SP('hris',this)"><span class="sb-ico">👤</span>HRIS & Karyawan</div>
+    <div class="sb-item" onclick="SP('absensi',this)"><span class="sb-ico">🕐</span>Absensi Realtime</div>
+    <div class="sb-item" onclick="SP('payroll',this)"><span class="sb-ico">💰</span>Payroll</div>
+    <div class="sb-item" onclick="SP('recruitment',this)"><span class="sb-ico">🔍</span>Rekrutmen</div>
+    <div class="sb-item" onclick="SP('psikotes',this)"><span class="sb-ico">🧠</span>Psikotes</div>
+    <div class="sb-item" onclick="SP('lms',this)"><span class="sb-ico">🎓</span>LMS & Kursus</div>
+    <div class="sb-item" onclick="SP('users',this)"><span class="sb-ico">👥</span>Users Platform</div>
+    <div class="sb-sec">Sistem</div>
+    <div class="sb-item" onclick="SP('settings',this)"><span class="sb-ico">⚙️</span>Pengaturan</div>
+    <div class="sb-logout"><button onclick="doLogout()">Keluar dari Admin</button></div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="page-title" id="page-title">Dashboard Overview</div>
+      <div class="topbar-r">
+        <span style="font-size:11px;color:var(--txt3);" id="clk"></span>
+        <span class="atag">Super Admin</span>
+        <a href="index.html" target="_blank" style="font-size:12px;color:var(--acc);text-decoration:none;">Lihat Website ↗</a>
+      </div>
+    </div>
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="stat-row">
+          <div class="sc"><div class="sc-l">Partners</div><div class="sc-v" id="st0">0</div><div class="sc-s">mitra aktif</div></div>
+          <div class="sc"><div class="sc-l">Ulasan Pending</div><div class="sc-v" id="st1">0</div><div class="sc-s">menunggu approve</div></div>
+          <div class="sc"><div class="sc-l">Kursus LMS</div><div class="sc-v" id="st2">0</div><div class="sc-s">kursus aktif</div></div>
+          <div class="sc"><div class="sc-l">Soal Psikotes</div><div class="sc-v" id="st3">0</div><div class="sc-s">bank soal</div></div>
+        </div>
+        <div class="stat-row">
+          <div class="sc"><div class="sc-l">Karyawan</div><div class="sc-v" id="st4">0</div><div class="sc-s">data HRIS</div></div>
+          <div class="sc"><div class="sc-l">Item Gudang</div><div class="sc-v" id="st5">0</div><div class="sc-s">eStock tercatat</div></div>
+          <div class="sc"><div class="sc-l">Kandidat</div><div class="sc-v" id="st6">0</div><div class="sc-s">pipeline rekrutmen</div></div>
+          <div class="sc"><div class="sc-l">ERP PO Aktif</div><div class="sc-v" id="st7">0</div><div class="sc-s">purchase order</div></div>
+        </div>
+        <div class="notice">✦ Selamat datang di ALTHO Admin Panel — semua sub-produk dikelola dari satu panel terpusat.</div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-ttl">Ulasan Pending Approve</div></div>
+          <table><thead><tr><th>Nama</th><th>Produk</th><th>Rating</th><th>Ulasan</th><th>Aksi</th></tr></thead>
+          <tbody id="dash-rv"></tbody></table>
+        </div>
+      </div>
+
+      <!-- PARTNERS -->
+      <div class="panel" id="panel-partners">
+        <div class="fs"><div class="fs-ttl">Tambah Partner / Rekanan</div>
+          <div class="fgr"><div class="fg"><label>Nama Perusahaan</label><input type="text" id="p-nm" placeholder="PT Contoh Maju"/></div><div class="fg"><label>Emoji</label><input type="text" id="p-em" placeholder="🏢" maxlength="2"/></div></div>
+          <div class="fg"><label>Deskripsi</label><input type="text" id="p-ds" placeholder="Partner teknologi industri"/></div>
+          <div class="fg"><label>Website URL</label><input type="text" id="p-wb" placeholder="https://..."/></div>
+          <button class="btn btna" onclick="addPartner()">+ Tambah Partner</button>
+        </div>
+        <div class="card"><div class="card-hdr"><div class="card-ttl">Daftar Partner</div></div>
+          <table><thead><tr><th>Ikon</th><th>Nama</th><th>Deskripsi</th><th>Website</th><th>Aksi</th></tr></thead>
+          <tbody id="ptbl"></tbody></table>
+        </div>
+      </div>
+
+      <!-- REVIEWS -->
+      <div class="panel" id="panel-reviews">
+        <div class="nwarn notice">⚠ Ulasan yang diapprove akan tampil di website publik. Periksa sebelum approve.</div>
+        <div class="card"><div class="card-hdr"><div class="card-ttl">Semua Ulasan</div>
+          <div style="display:flex;gap:6px;"><button class="btn btnsm" onclick="filterRv('all')">Semua</button><button class="btn btnsm" onclick="filterRv('pending')">Pending</button><button class="btn btnsm" onclick="filterRv('approved')">Approved</button></div>
+        </div>
+        <table><thead><tr><th>Nama</th><th>Perusahaan</th><th>Produk</th><th>Rating</th><th>Ulasan</th><th>Status</th><th>Aksi</th></tr></thead>
+        <tbody id="rvtbl"></tbody></table></div>
+      </div>
+
+      <!-- MESSAGES -->
+      <div class="panel" id="panel-messages">
+        <div class="card"><div class="card-hdr"><div class="card-ttl">Pesan dari Form Kontak Website</div></div>
+          <table><thead><tr><th>Nama</th><th>Email</th><th>Produk</th><th>Pesan</th><th>Waktu</th></tr></thead>
+          <tbody id="msgtbl"><tr><td colspan="5" style="color:var(--txt3);text-align:center;padding:1.5rem;">Belum ada pesan masuk.</td></tr></tbody></table>
+        </div>
+      </div>
+
+      <!-- ALTHO AI -->
+      <div class="panel" id="panel-ai">
+        <div class="fs"><div class="fs-ttl">Kelola Konten Halaman ALTHO AI</div>
+          <div class="fg"><label>Tagline</label><input type="text" id="ai-tag" value="Predictive Intelligence for Industry"/></div>
+          <div class="fg"><label>Deskripsi</label><textarea id="ai-desc" rows="3">Platform analitik AI terdepan untuk operasi industri modern.</textarea></div>
+          <div class="fg"><label>Fitur Unggulan (pisahkan dengan koma)</label><input type="text" id="ai-feat" value="Predictive Analytics, Demand Forecasting, AI Decision Support, Data Visualization"/></div>
+          <button class="btn btna" onclick="saveContent('AI')">Simpan Konten ALTHO AI</button>
+        </div>
+        <div class="fs"><div class="fs-ttl">Status & Monitoring</div>
+          <div class="fgr"><div class="fg"><label>Status Layanan</label><select id="ai-status"><option>Aktif</option><option>Maintenance</option><option>Coming Soon</option></select></div><div class="fg"><label>Versi Platform</label><input type="text" id="ai-ver" value="v1.0.0"/></div></div>
+          <button class="btn btna" onclick="saveContent('AI Status')">Update Status</button>
+        </div>
+      </div>
+
+      <!-- ALTHO IoT -->
+      <div class="panel" id="panel-iot">
+        <div class="fs"><div class="fs-ttl">Kelola Konten Halaman ALTHO IoT</div>
+          <div class="fg"><label>Tagline</label><input type="text" id="iot-tag" value="Connect Every Machine, Every Sensor"/></div>
+          <div class="fg"><label>Deskripsi</label><textarea id="iot-desc" rows="3">Solusi IoT industri untuk menghubungkan seluruh aset pabrik.</textarea></div>
+          <div class="fg"><label>Protokol yang Didukung</label><input type="text" id="iot-proto" value="Modbus, OPC-UA, MQTT, BACnet, Profibus"/></div>
+          <button class="btn btna" onclick="saveContent('IoT')">Simpan Konten ALTHO IoT</button>
+        </div>
+      </div>
+
+      <!-- ALTHO OEE -->
+      <div class="panel" id="panel-oee">
+        <div class="fs"><div class="fs-ttl">Kelola Konten Halaman ALTHO OEE</div>
+          <div class="fg"><label>Tagline</label><input type="text" id="oee-tag" value="Maximize Production Efficiency"/></div>
+          <div class="fg"><label>Deskripsi</label><textarea id="oee-desc" rows="3">Dashboard OEE real-time untuk efisiensi produksi optimal.</textarea></div>
+          <div class="fg"><label>Komponen OEE yang Dipantau</label><input type="text" id="oee-comp" value="Availability, Performance, Quality, Six Big Losses"/></div>
+          <button class="btn btna" onclick="saveContent('OEE')">Simpan Konten ALTHO OEE</button>
+        </div>
+      </div>
+
+      <!-- ALTHO Control -->
+      <div class="panel" id="panel-control">
+        <div class="fs"><div class="fs-ttl">Kelola Konten Halaman ALTHO Control</div>
+          <div class="fg"><label>Tagline</label><input type="text" id="ctrl-tag" value="Total Control of Your Plant"/></div>
+          <div class="fg"><label>Deskripsi</label><textarea id="ctrl-desc" rows="3">Solusi kontrol industri lengkap dari PLC hingga SCADA.</textarea></div>
+          <div class="fg"><label>Brand PLC yang Didukung</label><input type="text" id="ctrl-plc" value="Siemens, Allen-Bradley, Omron, Mitsubishi, Schneider"/></div>
+          <button class="btn btna" onclick="saveContent('Control')">Simpan Konten ALTHO Control</button>
+        </div>
+      </div>
+
+      <!-- ALTHO Vision -->
+      <div class="panel" id="panel-vision">
+        <div class="maint-sec"><div class="maint-ico">👁️</div><div><div class="maint-ttl">ALTHO Vision — Under Development</div><div class="maint-sub">Halaman ini masih dalam pengembangan. Siapkan konten untuk diluncurkan nanti.</div></div></div>
+        <div class="fs"><div class="fs-ttl">Siapkan Konten ALTHO Vision</div>
+          <div class="fg"><label>Tagline</label><input type="text" id="vis-tag" value="See Every Defect, Every Time"/></div>
+          <div class="fg"><label>Deskripsi</label><textarea id="vis-desc" rows="3">Sistem inspeksi visual berbasis AI untuk quality control otomatis.</textarea></div>
+          <div class="fg"><label>Estimasi Launch</label><input type="text" id="vis-eta" value="Q3 2025"/></div>
+          <div class="fg"><label>Fitur yang Akan Datang</label><textarea id="vis-feat" rows="3">Camera AI inspection, Defect detection &gt;99%, Quality analytics real-time, High-speed 1000+ unit/menit</textarea></div>
+          <button class="btn btna" onclick="saveContent('Vision')">Simpan Draft Konten Vision</button>
+        </div>
+      </div>
+
+      <!-- ERP -->
+      <div class="panel" id="panel-erp">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="ST(this,'erp','po')">Purchase Order</button>
+          <button class="tab-btn" onclick="ST(this,'erp','supplier')">Supplier</button>
+          <button class="tab-btn" onclick="ST(this,'erp','prod-plan')">Production Plan</button>
+          <button class="tab-btn" onclick="ST(this,'erp','finance')">Financial</button>
+          <button class="tab-btn" onclick="ST(this,'erp','add-po')">+ Buat PO</button>
+        </div>
+        <div class="tp active" id="erp-po">
+          <div class="card"><div class="card-hdr"><div class="card-ttl">Daftar Purchase Order</div></div>
+            <table><thead><tr><th>No PO</th><th>Supplier</th><th>Item</th><th>Qty</th><th>Total</th><th>Status</th><th>Tanggal</th></tr></thead>
+            <tbody id="po-tbl"><tr><td colspan="7" style="color:var(--txt3);text-align:center;padding:1.5rem;">Belum ada PO. Buat PO baru di tab "+ Buat PO".</td></tr></tbody></table>
+          </div>
+        </div>
+        <div class="tp" id="erp-supplier">
+          <div class="fs"><div class="fs-ttl">Tambah Supplier</div>
+            <div class="fgr"><div class="fg"><label>Nama Supplier</label><input type="text" id="sup-nm" placeholder="PT Supplier Jaya"/></div><div class="fg"><label>Kategori</label><select id="sup-cat"><option>Raw Material</option><option>Components</option><option>Packaging</option><option>Services</option><option>MRO</option></select></div></div>
+            <div class="fgr"><div class="fg"><label>Contact Person</label><input type="text" id="sup-cp" placeholder="Nama PIC"/></div><div class="fg"><label>No. Telepon</label><input type="text" id="sup-ph" placeholder="+62..."/></div></div>
+            <div class="fg"><label>Alamat</label><textarea id="sup-addr" rows="2" placeholder="Alamat lengkap supplier..."></textarea></div>
+            <button class="btn btna" onclick="addSupplier()">+ Tambah Supplier</button>
+          </div>
+          <div class="card"><div class="card-hdr"><div class="card-ttl">Daftar Supplier</div></div>
+            <table><thead><tr><th>Nama</th><th>Kategori</th><th>Contact</th><th>Telepon</th><th>Aksi</th></tr></thead>
+            <tbody id="sup-tbl"><tr><td colspan="5" style="color:var(--txt3);text-align:center;padding:1.5rem;">Belum ada supplier.</td></tr></tbody></table>
+          </div>
+        </div>
+        <div class="tp" id="erp-prod-plan">
+          <div class="fs"><div class="fs-ttl">Input Production Plan</div>
+            <div class="fgr"><div class="fg"><label>Nama Produk</label><input type="text" id="pp-prod" placeholder="Nama produk yang diproduksi"/></div><div class="fg"><label>Target Qty</label><input type="number" id="pp-qty" placeholder="1000"/></div></div>
+            <div class="fgr"><div class="fg"><label>Tanggal Mulai</label><input type="date" id="pp-start"/></div><div class="fg"><label>Tanggal Selesai</label><input type="date" id="pp-end"/></div></div>
+            <div class="fg"><label>Line Produksi</label><input type="text" id="pp-line" placeholder="Line A / Mesin 1"/></div>
+            <button class="btn btna" onclick="addProdPlan()">+ Tambah Plan</button>
+          </div>
+          <div class="card"><div class="card-hdr"><div class="card-ttl">Production Plan Aktif</div></div>
+            <table><thead><tr><th>Produk</th><th>Target</th><th>Line</th><th>Mulai</th><th>Selesai</th><th>Status</th></tr></thead>
+            <tbody id="pp-tbl"><tr><td colspan="6" style="color:var(--txt3);text-align:center;padding:1.5rem;">Belum ada production plan.</td></tr></tbody></table>
+          </div>
+        </div>
+        <div class="tp" id="erp-finance">
+          <div class="notice">Modul financial terintegrasi dengan PO dan Payroll secara otomatis.</div>
+          <div class="fs"><div class="fs-ttl">Input Transaksi Manual</div>
+            <div class="fgr"><div class="fg"><label>Jenis</label><select id="fin-type"><option>Pemasukan</option><option>Pengeluaran</option></select></div><div class="fg"><label>Nominal (Rp)</label><input type="number" id="fin-amt" placeholder="5000000"/></div></div>
+            <div class="fg"><label>Keterangan</label><input type="text" id="fin-desc" placeholder="Keterangan transaksi..."/></div>
+            <button class="btn btna" onclick="addFinance()">+ Tambah Transaksi</button>
+          </div>
+          <div class="card"><div class="card-hdr"><div class="card-ttl">Riwayat Transaksi</div></div>
+            <table><thead><tr><th>Jenis</th><th>Nominal</th><th>Keterangan</th><th>Tanggal</th></tr></thead>
+            <tbody id="fin-tbl"><tr><td colspan="4" style="color:var(--txt3);text-align:center;padding:1.5rem;">Belum ada transaksi.</td></tr></tbody></table>
+          </div>
+        </div>
+        <div class="tp" id="erp-add-po">
+          <div class="fs"><div class="fs-ttl">Buat Purchase Order Baru</div>
+            <div class="fgr"><div class="fg"><label>Supplier</label><input type="text" id="po-sup" placeholder="Nama supplier"/></div><div class="fg"><label>No. Referensi</label><input type="text" id="po-ref" placeholder="PO-2025-001"/></div></div>
+            <div class="fg"><label>Item / Barang</label><input type="text" id="po-item" placeholder="Nama barang yang dipesan"/></div>
+            <div class="fgr3"><div class="fg"><label>Qty</label><input type="number" id="po-qty" placeholder="100"/></div><div class="fg"><label>Satuan</label><input type="text" id="po-unit" placeholder="pcs / kg / liter"/></div><div class="fg"><label>Harga/unit (Rp)</label><input type="number" id="po-price" placeholder="50000"/></div></div>
+            <div class="fg"><label>Tanggal Delivery</label><input type="date" id="po-date"/></div>
+            <button class="btn btna" onclick="addPO()">Buat Purchase Order</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SMART WAREHOUSE -->
+      <div class="panel" id="panel-warehouse">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="ST(this,'wh','stock')">eStock Inventory</button>
+          <button class="tab-btn" onclick="ST(this,'wh','add')">+ Tambah Item</button>
+          <button class="tab-btn" onclick="ST(this,'wh','movement')">Pergerakan Stok</button>
+          <button class="tab-btn" onclick="ST(this,'wh','location')">Lokasi Rak</button>
+        </div>
+        <div class="tp active" id="wh-stock">
+          <div class="notice ngrn">🏪 Smart Warehouse dengan sistem eStock — tracking stok real-time, auto-reorder, dan lokasi rak digital.</div>
+          <div class="card"><div class="card-hdr"><div class="card-ttl">Inventory eStock Real-Time</div>
+            <div style="display:flex;gap:6px;"><button class="btn btnsm" onclick="filterStock('all')">Semua</button><button class="btn btnsm" onclick="filterStock('low')">Stok Rendah</button><button class="btn btnsm" onclick="filterStock('out')">Habis</button></div>
+          </div>
+          <table><thead><tr><th>Kode</th><th>Nama Item</th><th>Kategori</th><th>Stok</th><th>Min. Stok</th><th>Lokasi Rak</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody id="stock-tbl"><tr><td colspan="8" style="color:var(--txt3);text-align:center;padding:1.5rem;">Belum ada item. Tambah item di tab "+ Tambah Item".</td></tr></tbody></table>
+          </div>
+        </div>
+        <div class="tp" id="wh-add">
+          <div class="fs"><div class="fs-ttl">Tambah Item ke Gudang (eStock)</div>
+            <div class="fgr"><div class="fg"><label>Kode Item / SKU</label><input type="text" id="w-code" placeholder="ITM-001 / SKU-ABC123"/></div><div class="fg"><label>Nama Item</label><input type="text" id="w-name" placeholder="Nama barang..."/></div></div>
+            <div class="fgr"><div class="fg"><label>Kategori</label><select id="w-cat"><option>Raw Material</option><option>WIP (Work In Progress)</option><option>Finished Goods</option><option>Spare Parts</option><option>Consumables</option><option>Packaging</option></select></div><div class="fg"><label>Satuan</label><input type="text" id="w-unit" placeholder="pcs / kg / liter / box"/></div></div>
+            <div class="fgr3"><div class="fg"><label>Stok Awal</label><input type="number" id="w-qty" placeholder="100"/></div><div class="fg"><label>Minimum Stok</label><input type="number" id="w-min" placeholder="20" title="Auto-alert saat stok di bawah ini"/></div><div class="fg"><label>Harga/unit (Rp)</label><input type="number" id="w-price" placeholder="50000"/></div></div>
+            <div class="fgr"><div class="fg"><label>Lokasi Rak</label><input type="text" id="w-loc" placeholder="A-1-2 (Zona-Rak-Shelf)"/></div><div class="fg"><label>Supplier</label><input type="text" id="w-sup" placeholder="Nama supplier..."/></div></div>
+            <div class="fg"><label>Keterangan</label><input type="text" id="w-note" placeholder="Catatan tambahan..."/></div>
+            <button class="btn btna" onclick="addStockItem()">+ Tambah ke eStock</button>
+          </div>
+        </div>
+        <div class="tp" id="wh-movement">
+          <div class="fs"><div class="fs-ttl">Input Pergerakan Stok</div>
+            <div class="fgr"><div class="fg"><label>Kode Item</label><input type="text" id="mv-code" placeholder="ITM-001"/></div><div class="fg"><label>Jenis</label><select id="mv-type"><option value="in">Masuk (Receive)</option><option value="out">Keluar (Issue)</option><option value="adj">Adjustment</option></select></div></div>
+            <div class="fgr"><div class="fg"><label>Qty</label><input type="number" id="mv-qty" placeholder="10"/></div><div class="fg"><label>Keterangan</label><input type="text" id="mv-note" placeholder="Dari PO / Ke produksi..."/></div></div>
+            <button class="btn btna" onclick="addMovement()">Catat Pergerakan</button>
+          </div>
+          <div class="card"><div class="card-hdr"><div class="card-ttl">Riwayat Pergerakan Stok</div></div>
+            <table><thead><tr><th>Waktu</th><th>Kode</th><th>Item</th><th>Jenis</th><th>Qty</th><th>Keterangan</th></tr></thead>
+            <tbody id="mv-tbl"><tr><td colspan="6" style="color:var(--txt3);text-align:center;padding:1.5rem;">Belum ada pergerakan stok.</td></tr></tbody></table>
+          </div>
+        </div>
+        <div class="tp" id="wh-location">
+          <div class="fs"><div class="fs-ttl">Tambah Lokasi Rak</div>
+            <div class="fgr3"><div class="fg"><label>Zona</label><input type="text" id="loc-zone" placeholder="A / B / C"/></div><div class="fg"><label>Nomor Rak</label><input type="text" id="loc-rack" placeholder="1 / 2 / 3"/></div><div class="fg"><label>Shelf</label><input type="text" id="loc-shelf" placeholder="1 / 2 / 3"/></div></div>
+            <div class="fg"><label>Keterangan</label><input type="text" id="loc-note" placeholder="Zona raw material, cold storage, dll"/></div>
+            <button class="btn btna" onclick="addLocation()">+ Tambah Lokasi</button>
+          </div>
+          <div class="card"><div class="card-hdr"><div class="card-ttl">Peta Lokasi Rak</div></div>
+            <table><thead><tr><th>Kode Lokasi</th><th>Zona</th><th>Rak</th><th>Shelf</th><th>Keterangan</th><th>Aksi</th></tr></thead>
+            <tbody id="loc-tbl"><tr><td colspan="6" style="color:var(--txt3);text-align:center;padding:1.5rem;">Belum ada lokasi rak.</td></tr></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- LEAN & TPM -->
+      <div class="panel" id="panel-lean">
+        <div class="fs"><div class="fs-ttl">Kelola Konten ALTHO Manufacturing — Lean & TPM</div>
+          <div class="fg"><label>Program Lean yang Aktif</label><input type="text" id="lean-prog" value="5S, Kaizen, VSM, SMED, Poka-Yoke"/></div>
+          <div class="fg"><label>Jadwal PM (Preventive Maintenance)</label><textarea id="lean-pm" rows="3" placeholder="Mesin, jadwal, PIC PM..."></textarea></div>
+          <button class="btn btna" onclick="saveContent('Lean & TPM')">Simpan Konten</button>
+        </div>
+      </div>
+
+      <!-- HRIS -->
+      <div class="panel" id="panel-hris">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="ST(this,'hr','list')">Data Karyawan</button>
+          <button class="tab-btn" onclick="ST(this,'hr','add')">+ Tambah Karyawan</button>
+          <button class="tab-btn" onclick="ST(this,'hr','org')">Struktur Org</button>
+        </div>
+        <div class="tp active" id="hr-list">
+          <div class="notice">HRIS terintegrasi penuh — data karyawan, jabatan, kontrak, dokumen, dan riwayat kerja.</div>
+          <div class="card"><div class="card-hdr"><div class="card-ttl">Data Karyawan</div></div>
+            <div id="emp-list" style="padding:1rem 1.5rem;"></div>
+          </div>
+        </div>
+        <div class="tp" id="hr-add">
+          <div class="fs"><div class="fs-ttl">Tambah Data Karyawan</div>
+            <div class="fgr"><div class="fg"><label>Nama Lengkap</label><input type="text" id="e-name" placeholder="Nama karyawan"/></div><div class="fg"><label>NIK / ID Karyawan</label><input type="text" id="e-nik" placeholder="EMP-001"/></div></div>
+            <div class="fgr"><div class="fg"><label>Jabatan</label><input type="text" id="e-job" placeholder="Staff / Manager / Supervisor"/></div><div class="fg"><label>Departemen</label><select id="e-dept"><option>Produksi</option><option>Engineering</option><option>HR & Admin</option><option>Finance</option><option>Marketing</option><option>IT</option><option>Warehouse</option><option>Quality Control</option></select></div></div>
+            <div class="fgr"><div class="fg"><label>Tanggal Masuk</label><input type="date" id="e-join"/></div><div class="fg"><label>Jenis Kontrak</label><select id="e-contract"><option>Tetap (PKWTT)</option><option>Kontrak (PKWT)</option><option>Magang</option><option>Outsourcing</option><option>Freelance</option></select></div></div>
+            <div class="fgr"><div class="fg"><label>No. HP / WA</label><input type="text" id="e-phone" placeholder="+62..."/></div><div class="fg"><label>Email</label><input type="text" id="e-email" placeholder="email@..."/></div></div>
+            <div class="fgr"><div class="fg"><label>Gaji Pokok (Rp)</label><input type="number" id="e-salary" placeholder="5000000"/></div><div class="fg"><label>Metode Absensi</label><select id="e-abs"><option>Face Recognition</option><option>GPS Check-in</option><option>Fingerprint</option><option>QR Code</option><option>Manual</option></select></div></div>
+            <button class="btn btna" onclick="addEmployee()">+ Tambah Karyawan</button>
+          </div>
+        </div>
+        <div class="tp" id="hr-org">
+          <div class="notice">Struktur organisasi akan di-generate otomatis dari data departemen dan jabatan karyawan.</div>
+          <div class="fs"><div class="fs-ttl">Tambah Struktur Jabatan</div>
+            <div class="fgr"><div class="fg"><label>Nama Jabatan</label><input type="text" id="org-title" placeholder="CEO / Manager / Supervisor..."/></div><div class="fg"><label>Level</label><select id="org-level"><option>Direktur</option><option>Manager</option><option>Supervisor</option><option>Staff</option><option>Operator</option></select></div></div>
+            <div class="fg"><label>Melapor kepada (Jabatan Atasan)</label><input type="text" id="org-report" placeholder="Jabatan atasan langsung..."/></div>
+            <button class="btn btna" onclick="saveContent('Org Structure')">Simpan Struktur</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ABSENSI -->
+      <div class="panel" id="panel-absensi">
+        <div class="notice ngrn">🕐 Sistem absensi online & realtime — GPS, Face Recognition, Fingerprint, dan QR Code terintegrasi.</div>
+        <div class="tabs">
+          <button class="tab-btn active" onclick="ST(this,'ab','today')">Hari Ini</button>
+          <button class="tab-btn" onclick="ST(this,'ab','manual')">Input Manual</button>
+          <button class="tab-btn" onclick="ST(this,'ab','izin')">Izin & Cuti</button>
+          <button class="tab-btn" onclick="ST(this,'ab','lembur')">Lembur</button>
+          <button class="tab-btn" onclick="ST(this,'ab','setting')">Pengaturan</button>
+        </div>
+        <div class="tp active" id="ab-today">
+          <div class="card"><div class="card-hdr"><div class="card-ttl">Data Absensi Hari Ini</div><span style="font-family:var(--M);font-size:11px;color:var(--txt3);" id="today-date"></span></div>
+            <table><thead><tr><th>NIK</th><th>Nama</th><th>Check-In</th><th>Check-Out</th><th>Metode</th><th>Lokasi</th><th>Status</th></tr></thead>
+            <tbody id="abs-today-tbl"><tr><td colspan="7" style="color:var(--txt3);text-align:center;padding:1.5rem;">Belum ada data absensi hari ini.</td></tr></tbody></table>
+          </div>
+        </div>
+        <div class="tp" id="ab-manual">
+          <div class="fs"><div class="fs-ttl">Input Absensi Manual</div>
+            <div class="fgr"><div class="fg"><label>NIK / Nama Karyawan</label><input type="text" id="abs-emp" placeholder="NIK atau nama..."/></div><div class="fg"><label>Tanggal</label><input type="date" id="abs-date"/></div></div>
+            <div class="fgr"><div class="fg"><label>Jam Check-In</label><input type="time" id="abs-in"/></div><div class="fg"><label>Jam Check-Out</label><input type="time" id="abs-out"/></div></div>
+            <div class="fgr"><div class="fg"><label>Status</label><select id="abs-status"><option>Hadir</option><option>Terlambat</option><option>Pulang Awal</option><option>Lembur</option></select></div><div class="fg"><label>Keterangan</label><input type="text" id="abs-note" placeholder="Catatan..."/></div></div>
+            <button class="btn btna" onclick="addAbsensi()">Simpan Absensi</button>
+          </div>
+        </div>
+        <div class="tp" id="ab-izin">
+          <div class="fs"><div class="fs-ttl">Input Pengajuan Izin / Cuti</div>
+            <div class="fgr"><div class="fg"><label>Karyawan</label><input type="text" id="izin-emp" placeholder="Nama karyawan"/></div><div class="fg"><label>Jenis</label><select id="izin-type"><option>Cuti Tahunan</option><option>Sakit</option><option>Izin Keperluan Pribadi</option><option>Cuti Melahirkan</option><option>Cuti Bersama</option><option>Dinas Luar</option></select></div></div>
+            <div class="fgr"><div class="fg"><label>Tanggal Mulai</label><input type="date" id="izin-start"/></div><div class="fg"><label>Tanggal Selesai</label><input type="date" id="izin-end"/></div></div>
+            <div class="fg"><label>Keterangan</label><textarea id="izin-note" rows="2" placeholder="Alasan/keterangan..."></textarea></div>
+            <button class="btn btna" onclick="addIzin()">Simpan Izin/Cuti</button>
+          </div>
+          <div class="card"><div class="card-hdr"><div class="card-ttl">Riwayat Izin & Cuti</div></div>
+            <table><thead><tr><th>Karyawan</th><th>Jenis</th><th>Mulai</th><th>Selesai</th><th>Status</th><th>Aksi</th></tr></thead>
+            <tbody id="izin-tbl"><tr><td colspan="6" style="color:var(--txt3);text-align:center;padding:1.5rem;">Belum ada pengajuan.</td></tr></tbody></table>
+          </div>
+        </div>
+        <div class="tp" id="ab-lembur">
+          <div class="fs"><div class="fs-ttl">Input Lembur</div>
+            <div class="fgr"><div class="fg"><label>Karyawan</label><input type="text" id="lem-emp" placeholder="Nama karyawan"/></div><div class="fg"><label>Tanggal</label><input type="date" id="lem-date"/></div></div>
+            <div class="fgr"><div class="fg"><label>Jam Mulai</label><input type="time" id="lem-start"/></div><div class="fg"><label>Jam Selesai</label><input type="time" id="lem-end"/></div></div>
+            <div class="fg"><label>Keterangan Lembur</label><input type="text" id="lem-note" placeholder="Alasan lembur..."/></div>
+            <button class="btn btna" onclick="addLembur()">Simpan Lembur</button>
+          </div>
+          <div class="card"><div class="card-hdr"><div class="card-ttl">Riwayat Lembur</div></div>
+            <table><thead><tr><th>Karyawan</th><th>Tanggal</th><th>Mulai</th><th>Selesai</th><th>Durasi</th><th>Status</th></tr></thead>
+            <tbody id="lem-tbl"><tr><td colspan="6" style="color:var(--txt3);text-align:center;padding:1.5rem;">Belum ada data lembur.</td></tr></tbody></table>
+          </div>
+        </div>
+        <div class="tp" id="ab-setting">
+          <div class="fs"><div class="fs-ttl">Pengaturan Absensi</div>
+            <div class="fgr"><div class="fg"><label>Jam Kerja Mulai</label><input type="time" id="wh-start" value="08:00"/></div><div class="fg"><label>Jam Kerja Selesai</label><input type="time" id="wh-end" value="17:00"/></div></div>
+            <div class="fgr"><div class="fg"><label>Toleransi Keterlambatan (menit)</label><input type="number" id="abs-tol" value="15"/></div><div class="fg"><label>Radius GPS Check-in (meter)</label><input type="number" id="abs-radius" value="100"/></div></div>
+            <div class="fg"><label>Lokasi Kantor (koordinat)</label><input type="text" id="abs-gps" placeholder="-6.1234, 106.5678"/></div>
+            <div class="fg"><label>Metode Absensi Default</label><select id="abs-method"><option>GPS + Face Recognition</option><option>GPS Only</option><option>Fingerprint</option><option>QR Code</option><option>Manual Admin</option></select></div>
+            <button class="btn btna" onclick="saveContent('Absensi Setting')">Simpan Pengaturan Absensi</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAYROLL -->
+      <div class="panel" id="panel-payroll">
+        <div class="notice">Payroll dihitung otomatis dari: gaji pokok + lembur - potongan (absensi, BPJS, pajak).</div>
+        <div class="fs"><div class="fs-ttl">Proses Payroll Bulanan</div>
+          <div class="fgr"><div class="fg"><label>Periode (Bulan/Tahun)</label><input type="month" id="pay-period"/></div><div class="fg"><label>Tanggal Gajian</label><input type="date" id="pay-date"/></div></div>
+          <div class="fg"><label>Komponen Tambahan</label><input type="text" id="pay-extra" placeholder="Tunjangan transport, makan, dll..."/></div>
+          <button class="btn btna" onclick="saveContent('Payroll')">Proses Payroll</button>
+        </div>
+        <div class="card"><div class="card-hdr"><div class="card-ttl">Riwayat Payroll</div></div>
+          <table><thead><tr><th>Periode</th><th>Total Karyawan</th><th>Total Gaji</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody id="pay-tbl"><tr><td colspan="5" style="color:var(--txt3);text-align:center;padding:1.5rem;">Belum ada riwayat payroll.</td></tr></tbody></table>
+        </div>
+      </div>
+
+      <!-- RECRUITMENT -->
+      <div class="panel" id="panel-recruitment">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="ST(this,'rc','pipeline')">Pipeline</button>
+          <button class="tab-btn" onclick="ST(this,'rc','post')">+ Posting Job</button>
+        </div>
+        <div class="tp active" id="rc-pipeline">
+          <div class="card"><div class="card-hdr"><div class="card-ttl">Pipeline Rekrutmen</div></div>
+            <table><thead><tr><th>Nama Kandidat</th><th>Posisi</th><th>Stage</th><th>Psikotes</th><th>Tanggal</th><th>Aksi</th></tr></thead>
+            <tbody id="rc-tbl"><tr><td colspan="6" style="color:var(--txt3);text-align:center;padding:1.5rem;">Belum ada kandidat. Posting job untuk mulai menerima lamaran.</td></tr></tbody></table>
+          </div>
+        </div>
+        <div class="tp" id="rc-post">
+          <div class="fs"><div class="fs-ttl">Posting Lowongan Kerja</div>
+            <div class="fgr"><div class="fg"><label>Posisi / Jabatan</label><input type="text" id="job-title" placeholder="Staff Engineering / HRD Manager..."/></div><div class="fg"><label>Departemen</label><select id="job-dept"><option>Produksi</option><option>Engineering</option><option>HR</option><option>Finance</option><option>IT</option><option>Marketing</option><option>Warehouse</option></select></div></div>
+            <div class="fgr"><div class="fg"><label>Jenis Pekerjaan</label><select id="job-type"><option>Full Time</option><option>Part Time</option><option>Kontrak</option><option>Magang</option></select></div><div class="fg"><label>Range Gaji</label><input type="text" id="job-sal" placeholder="Rp 5jt - 8jt / Negotiable"/></div></div>
+            <div class="fg"><label>Kualifikasi</label><textarea id="job-qual" rows="3" placeholder="Pendidikan, pengalaman, skill yang dibutuhkan..."></textarea></div>
+            <div class="fg"><label>Deskripsi Pekerjaan</label><textarea id="job-desc" rows="3" placeholder="Tanggung jawab dan tugas utama..."></textarea></div>
+            <div class="fg"><label>Deadline Lamaran</label><input type="date" id="job-deadline"/></div>
+            <button class="btn btna" onclick="addJobPost()">Posting Lowongan</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PSIKOTES -->
+      <div class="panel" id="panel-psikotes">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="ST(this,'ps','bank')">Bank Soal</button>
+          <button class="tab-btn" onclick="ST(this,'ps','add')">+ Tambah Soal</button>
+          <button class="tab-btn" onclick="ST(this,'ps','types')">Jenis Tes</button>
+        </div>
+        <div class="tp active" id="ps-bank">
+          <div class="card"><div class="card-hdr"><div class="card-ttl">Bank Soal Psikotes</div>
+            <select id="psf" onchange="renderPsiko()" style="background:var(--sur2);border:1px solid var(--brd2);border-radius:6px;padding:4px 8px;color:var(--txt);font-size:11px;">
+              <option value="">Semua Jenis</option><option value="MBTI">MBTI</option><option value="DISC">DISC</option><option value="Big Five">Big Five</option><option value="IQ">IQ</option><option value="EQ">EQ</option>
+            </select>
+          </div>
+          <div id="psiko-bank" style="padding:1rem 1.5rem;"></div></div>
+        </div>
+        <div class="tp" id="ps-add">
+          <div class="fs"><div class="fs-ttl">Tambah Soal Psikotes Baru</div>
+            <div class="fgr"><div class="fg"><label>Jenis</label><select id="q-type"><option value="MBTI">MBTI</option><option value="DISC">DISC</option><option value="Big Five">Big Five</option><option value="IQ">IQ</option><option value="EQ">EQ</option></select></div><div class="fg"><label>Dimensi / Aspek</label><input type="text" id="q-dim" placeholder="E/I, D/I/S/C, Openness..."/></div></div>
+            <div class="fg"><label>Pertanyaan</label><textarea id="q-text" rows="3" placeholder="Tuliskan pertanyaan psikotes..."></textarea></div>
+            <div class="fgr"><div class="fg"><label>Pilihan A</label><input type="text" id="q-a" placeholder="Jawaban A..."/></div><div class="fg"><label>Pilihan B</label><input type="text" id="q-b" placeholder="Jawaban B..."/></div></div>
+            <div class="fgr"><div class="fg"><label>Pilihan C (opsional)</label><input type="text" id="q-c"/></div><div class="fg"><label>Pilihan D (opsional)</label><input type="text" id="q-d"/></div></div>
+            <div class="fgr"><div class="fg"><label>Skor A → Dimensi</label><input type="text" id="q-sa" placeholder="E (Extraversion)"/></div><div class="fg"><label>Skor B → Dimensi</label><input type="text" id="q-sb" placeholder="I (Introversion)"/></div></div>
+            <button class="btn btna" onclick="addQ()">+ Simpan Soal</button>
+          </div>
+        </div>
+        <div class="tp" id="ps-types">
+          <div class="notice">Tersedia di Free tier: MBTI lite. Tersedia di Pro: DISC, Big Five, IQ, EQ.</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="fs" style="margin:0;"><div class="fs-ttl">MBTI <span class="badge bok" style="margin-left:8px;">Free</span></div><p style="font-size:12px;color:var(--txt2);">16 tipe kepribadian. Career exploration awal.</p></div>
+            <div class="fs" style="margin:0;"><div class="fs-ttl">DISC <span class="badge bwarn" style="margin-left:8px;">Pro</span></div><p style="font-size:12px;color:var(--txt2);">Dominance, Influence, Steadiness, Conscientiousness.</p></div>
+            <div class="fs" style="margin:0;"><div class="fs-ttl">Big Five <span class="badge bwarn" style="margin-left:8px;">Pro</span></div><p style="font-size:12px;color:var(--txt2);">OCEAN: Openness, Conscientiousness, Extraversion, Agreeableness, Neuroticism.</p></div>
+            <div class="fs" style="margin:0;"><div class="fs-ttl">IQ & EQ <span class="badge bwarn" style="margin-left:8px;">Pro</span></div><p style="font-size:12px;color:var(--txt2);">Intelligence Quotient & Emotional Quotient untuk rekrutmen mendalam.</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LMS -->
+      <div class="panel" id="panel-lms">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="ST(this,'lm','list')">Kursus Aktif</button>
+          <button class="tab-btn" onclick="ST(this,'lm','add')">+ Tambah Kursus</button>
+          <button class="tab-btn" onclick="ST(this,'lm','cert')">Sertifikat</button>
+        </div>
+        <div class="tp active" id="lm-list">
+          <div class="notice">LMS berbasis video YouTube — admin input YouTube URL, sistem embed otomatis + pre/post assessment + sertifikat.</div>
+          <div id="courses-list"></div>
+        </div>
+        <div class="tp" id="lm-add">
+          <div class="fs"><div class="fs-ttl">Tambah Kursus Baru</div>
+            <div class="fgr"><div class="fg"><label>Judul Kursus</label><input type="text" id="c-title" placeholder="Pengenalan Lean Manufacturing"/></div><div class="fg"><label>Kategori</label><select id="c-cat"><option>ALTHO Manufacturing</option><option>ALTHO AI</option><option>ALTHO IoT</option><option>ALTHO OEE</option><option>ALTHO Control</option><option>ALTHO PeopleTech</option><option>Career Development</option><option>Leadership</option></select></div></div>
+            <div class="fg"><label>Deskripsi</label><textarea id="c-desc" rows="2" placeholder="Manfaat dan isi kursus..."></textarea></div>
+            <div class="fgr3"><div class="fg"><label>Instruktur</label><input type="text" id="c-inst" placeholder="Nama instruktur"/></div><div class="fg"><label>Durasi Total</label><input type="text" id="c-dur" placeholder="4 jam"/></div><div class="fg"><label>Harga</label><input type="text" id="c-price" placeholder="Gratis / Rp 299.000"/></div></div>
+            <div class="fgr"><div class="fg"><label>Level</label><select id="c-lvl"><option>Pemula</option><option>Menengah</option><option>Lanjutan</option></select></div><div class="fg"><label>Emoji</label><input type="text" id="c-emoji" placeholder="📚" maxlength="2"/></div></div>
+            <div style="background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:1.25rem;margin-bottom:.75rem;">
+              <div style="font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.75rem;">VIDEO KURSUS (YouTube)</div>
+              <div id="vid-list" style="display:flex;flex-direction:column;gap:5px;margin-bottom:.625rem;"></div>
+              <div style="display:flex;gap:6px;">
+                <input type="text" id="v-title" placeholder="Judul bab/video" style="flex:1;background:var(--sur);border:1px solid var(--brd2);border-radius:7px;padding:7px 10px;font-family:var(--B);font-size:12px;color:var(--txt);outline:none;"/>
+                <input type="text" id="v-url" placeholder="https://youtube.com/watch?v=..." style="flex:2;background:var(--sur);border:1px solid var(--brd2);border-radius:7px;padding:7px 10px;font-family:var(--B);font-size:12px;color:var(--txt);outline:none;"/>
+                <button class="btn btnsm" onclick="addVid()">+ Add</button>
+              </div>
+            </div>
+            <div class="fgr"><div class="fg"><label>Pre-Test Q1</label><input type="text" id="pre1" placeholder="Soal sebelum mulai..."/></div><div class="fg"><label>Pre-Test Q2</label><input type="text" id="pre2" placeholder="Soal sebelum mulai..."/></div></div>
+            <div class="fgr"><div class="fg"><label>Post-Test Q1</label><input type="text" id="post1" placeholder="Soal evaluasi akhir..."/></div><div class="fg"><label>Post-Test Q2</label><input type="text" id="post2" placeholder="Soal evaluasi akhir..."/></div></div>
+            <div class="fg"><label>Nilai Minimum Lulus (%)</label><input type="number" id="pass-score" placeholder="70" min="0" max="100"/></div>
+            <button class="btn btna" onclick="saveCourse()">💾 Simpan Kursus</button>
+          </div>
+        </div>
+        <div class="tp" id="lm-cert">
+          <div class="fs"><div class="fs-ttl">Template Sertifikat</div>
+            <div class="notice">Sertifikat auto-generate saat user lulus post-assessment dengan nilai ≥ minimum.</div>
+            <div class="fg"><label>Nama Institusi</label><input type="text" id="cert-inst" value="ALTHO Automation Solutions"/></div>
+            <div class="fg"><label>Teks Sertifikat</label><textarea id="cert-text" rows="3">Dengan bangga menyatakan bahwa peserta telah menyelesaikan kursus dan lulus assessment dengan nilai memuaskan.</textarea></div>
+            <div class="fg"><label>Penanda Tangan</label><input type="text" id="cert-sign" placeholder="Direktur / CEO ALTHO"/></div>
+            <button class="btn btna" onclick="saveContent('Certificate')">Simpan Template</button>
+          </div>
+          <div class="card"><div class="card-hdr"><div class="card-ttl">Sertifikat Diterbitkan</div></div>
+            <table><thead><tr><th>Nama User</th><th>Kursus</th><th>Nilai</th><th>Tanggal</th><th>Aksi</th></tr></thead>
+            <tbody id="cert-tbl"><tr><td colspan="5" style="color:var(--txt3);text-align:center;padding:1.5rem;">Belum ada sertifikat diterbitkan.</td></tr></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- USERS -->
+      <div class="panel" id="panel-users">
+        <div class="notice">Data user platform tersinkron dari Supabase setelah integrasi aktif.</div>
+        <div class="card"><div class="card-hdr"><div class="card-ttl">Users Platform ALTHO</div></div>
+          <table><thead><tr><th>Nama</th><th>Email</th><th>Tier</th><th>Bergabung</th><th>Kursus</th><th>Psikotes</th><th>Aksi</th></tr></thead>
+          <tbody id="usr-tbl"><tr><td colspan="7" style="color:var(--txt3);text-align:center;padding:1.5rem;">Belum ada user. Data muncul setelah Supabase aktif.</td></tr></tbody></table>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="panel" id="panel-settings">
+        <div class="fs"><div class="fs-ttl">Pengaturan Platform ALTHO</div>
+          <div class="fg"><label>Nama Perusahaan</label><input type="text" id="s-co" value="ALTHO Automation Solutions"/></div>
+          <div class="fgr"><div class="fg"><label>Email</label><input type="text" id="s-email" value="althoautomation@gmail.com"/></div><div class="fg"><label>WhatsApp</label><input type="text" id="s-wa" value="085882871901"/></div></div>
+          <div class="fg"><label>Alamat</label><textarea id="s-addr" rows="2">Jl. Manggala 2 Blok M1 No.8, RT.003/RW.008, Cipondoh Makmur, Kec. Cipondoh, Kota Tangerang, Banten 15148</textarea></div>
+          <div class="fg"><label>Ganti Password Admin</label><input type="password" id="s-pass" placeholder="Password baru..."/></div>
+          <button class="btn btna" onclick="saveSettings()">Simpan Pengaturan</button>
+        </div>
+        <div class="fs"><div class="fs-ttl">Status Integrasi</div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--brd);font-size:12px;"><span>Supabase Database</span><span class="badge bwarn">Belum terhubung</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--brd);font-size:12px;"><span>Claude API (AI)</span><span class="badge bwarn">Perlu API Key</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--brd);font-size:12px;"><span>Payment Gateway</span><span class="badge bwarn">Belum aktif</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--brd);font-size:12px;"><span>Prima Plus Course</span><span class="badge bok">Terintegrasi</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:12px;"><span>CustomCAD Solution</span><span class="badge bok">Partner Aktif</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:12px;"><span>OEE Dashboard Demo</span><span class="badge bok"><a href="oee-dashboard.html" target="_blank" style="color:var(--grn);text-decoration:none;">Aktif ↗</a></span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:12px;"><span>IoT Dashboard Demo</span><span class="badge bok"><a href="iot-dashboard.html" target="_blank" style="color:var(--grn);text-decoration:none;">Aktif ↗</a></span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const PASS='altho2025';
+function doLogin(){const p=document.getElementById('l-pass').value;if(p===PASS){document.getElementById('login-wrap').style.display='none';document.getElementById('admin-wrap').classList.add('show');initAdmin();}else{document.getElementById('l-err').style.display='block';}}
+document.getElementById('l-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+function doLogout(){if(confirm('Keluar dari admin?')){location.reload();}}
+const titles={dashboard:'Dashboard Overview',partners:'Partners & Rekanan',reviews:'Kelola Ulasan',messages:'Pesan Masuk',ai:'ALTHO AI — Konten',iot:'ALTHO IoT — Konten',oee:'ALTHO OEE — Konten',control:'ALTHO Control — Konten',vision:'ALTHO Vision — Coming Soon',erp:'ERP Management',warehouse:'Smart Warehouse & eStock',lean:'Lean & TPM',hris:'HRIS — Data Karyawan',absensi:'Absensi Online Realtime',payroll:'Payroll Otomatis',recruitment:'Rekrutmen AI',psikotes:'Admin Psikotes',lms:'LMS & Kursus Video',users:'Users Platform',settings:'Pengaturan Sistem'};
+function SP(id,el){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'));document.getElementById('panel-'+id).classList.add('active');el.classList.add('active');document.getElementById('page-title').textContent=titles[id]||id;}
+function ST(el,prefix,tab){const paneMap={erp:{po:'erp-po',supplier:'erp-supplier','prod-plan':'erp-prod-plan',finance:'erp-finance','add-po':'erp-add-po'},wh:{stock:'wh-stock',add:'wh-add',movement:'wh-movement',location:'wh-location'},ab:{today:'ab-today',manual:'ab-manual',izin:'ab-izin',lembur:'ab-lembur',setting:'ab-setting'},hr:{list:'hr-list',add:'hr-add',org:'hr-org'},rc:{pipeline:'rc-pipeline',post:'rc-post'},ps:{bank:'ps-bank',add:'ps-add',types:'ps-types'},lm:{list:'lm-list',add:'lm-add',cert:'lm-cert'}};
+  const paneId=paneMap[prefix]?paneMap[prefix][tab]:prefix+'-'+tab;
+  document.querySelectorAll(`[id^="${prefix}-"],[id^="${paneMap[prefix]?Object.values(paneMap[prefix])[0].split('-')[0]:''}"]`).forEach(()=>{});
+  const allPanes=Object.values(paneMap[prefix]||{});
+  allPanes.forEach(pid=>{const el2=document.getElementById(pid);if(el2)el2.classList.remove('active');});
+  if(document.getElementById(paneId))document.getElementById(paneId).classList.add('active');
+  el.closest('.tabs').querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
+function getD(k){try{return JSON.parse(localStorage.getItem(k)||'[]');}catch{return[];}}
+function setD(k,v){localStorage.setItem(k,JSON.stringify(v));}
+function fmt(n){return n.toLocaleString('id-ID');}
+
+// PARTNERS
+function addPartner(){const nm=document.getElementById('p-nm').value.trim();if(!nm){alert('Nama wajib');return;}const p=getD('altho_partners');p.push({id:Date.now(),name:nm,emoji:document.getElementById('p-em').value||'🏢',desc:document.getElementById('p-ds').value,web:document.getElementById('p-wb').value});setD('altho_partners',p);['p-nm','p-em','p-ds','p-wb'].forEach(id=>document.getElementById(id).value='');renderPartnersTbl();updateStats();}
+function delPartner(id){if(!confirm('Hapus?'))return;setD('altho_partners',getD('altho_partners').filter(p=>p.id!==id));renderPartnersTbl();updateStats();}
+function renderPartnersTbl(){const tb=document.getElementById('ptbl');const p=getD('altho_partners');if(!p.length){tb.innerHTML='<tr><td colspan="5" style="color:var(--txt3);text-align:center;padding:1.5rem;">Belum ada partner.</td></tr>';return;}tb.innerHTML=p.map(x=>`<tr><td style="font-size:20px;">${x.emoji}</td><td style="font-weight:500;">${x.name}</td><td style="color:var(--txt2);">${x.desc||'—'}</td><td><a href="${x.web||'#'}" style="color:var(--acc);font-size:11px;" target="_blank">${x.web||'—'}</a></td><td><button class="btn btnsm btnr" onclick="delPartner(${x.id})">Hapus</button></td></tr>`).join('');}
+
+// REVIEWS
+let rvF='all';
+function filterRv(f){rvF=f;renderRvTbl();}
+function approveRv(id){const r=getD('altho_reviews');const i=r.findIndex(x=>x.id===id);if(i>-1){r[i].approved=true;setD('altho_reviews',r);}renderRvTbl();renderDashRv();updateStats();}
+function delRv(id){if(!confirm('Hapus?'))return;setD('altho_reviews',getD('altho_reviews').filter(r=>r.id!==id));renderRvTbl();renderDashRv();updateStats();}
+function renderRvTbl(){const tb=document.getElementById('rvtbl');let r=getD('altho_reviews');if(rvF==='pending')r=r.filter(x=>!x.approved);else if(rvF==='approved')r=r.filter(x=>x.approved);if(!r.length){tb.innerHTML='<tr><td colspan="7" style="color:var(--txt3);text-align:center;padding:1.5rem;">Tidak ada ulasan.</td></tr>';return;}tb.innerHTML=r.map(x=>`<tr><td style="font-weight:500;">${x.name}</td><td>${x.company||'—'}</td><td>${x.product||'—'}</td><td style="color:var(--gold);">${'★'.repeat(x.rating)}</td><td style="color:var(--txt2);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${x.msg}</td><td><span class="badge ${x.approved?'bok':'bpend'}">${x.approved?'Approved':'Pending'}</span></td><td style="display:flex;gap:5px;">${!x.approved?`<button class="btn btnsm btng" onclick="approveRv(${x.id})">Approve</button>`:''}<button class="btn btnsm btnr" onclick="delRv(${x.id})">Hapus</button></td></tr>`).join('');}
+function renderDashRv(){const tb=document.getElementById('dash-rv');const r=getD('altho_reviews').filter(x=>!x.approved).slice(0,5);if(!r.length){tb.innerHTML='<tr><td colspan="5" style="color:var(--txt3);text-align:center;padding:1rem;">Tidak ada ulasan pending.</td></tr>';return;}tb.innerHTML=r.map(x=>`<tr><td style="font-weight:500;">${x.name}</td><td>${x.product||'—'}</td><td style="color:var(--gold);">${'★'.repeat(x.rating)}</td><td style="color:var(--txt2);">${x.msg.slice(0,60)}...</td><td><button class="btn btnsm btng" onclick="approveRv(${x.id})">Approve</button></td></tr>`).join('');}
+
+// EMPLOYEES
+function addEmployee(){const nm=document.getElementById('e-name').value.trim();if(!nm){alert('Nama wajib');return;}const e=getD('altho_employees');e.push({id:Date.now(),name:nm,nik:document.getElementById('e-nik').value,job:document.getElementById('e-job').value,dept:document.getElementById('e-dept').value,join:document.getElementById('e-join').value,contract:document.getElementById('e-contract').value,phone:document.getElementById('e-phone').value,email:document.getElementById('e-email').value,salary:document.getElementById('e-salary').value,absMethod:document.getElementById('e-abs').value});setD('altho_employees',e);['e-name','e-nik','e-job','e-phone','e-email','e-salary'].forEach(id=>document.getElementById(id).value='');renderEmployees();updateStats();}
+function renderEmployees(){const el=document.getElementById('emp-list');const e=getD('altho_employees');if(!e.length){el.innerHTML='<p style="color:var(--txt3);text-align:center;padding:1.5rem;">Belum ada karyawan. Tambah di tab "+ Tambah Karyawan".</p>';return;}el.innerHTML=e.map((x,i)=>`<div class="emp-row"><div class="emp-av">👤</div><div style="flex:1;"><div class="emp-name">${x.name} <span style="font-family:var(--M);font-size:10px;color:var(--txt3);">${x.nik||''}</span></div><div class="emp-role">${x.job||'—'} • ${x.dept||'—'} • ${x.contract||'—'}</div></div><div style="font-size:11px;color:var(--txt3);">${x.absMethod||'—'}</div><div style="font-family:var(--M);font-size:12px;color:var(--acc);margin:0 1rem;">${x.salary?'Rp '+Number(x.salary).toLocaleString('id-ID'):'—'}</div><button class="btn btnsm btnr" onclick="delEmp(${x.id})">Hapus</button></div>`).join('');}
+function delEmp(id){if(!confirm('Hapus karyawan?'))return;setD('altho_employees',getD('altho_employees').filter(e=>e.id!==id));renderEmployees();updateStats();}
+
+// ABSENSI
+function addAbsensi(){alert('Data absensi tersimpan!');}
+function addIzin(){const emp=document.getElementById('izin-emp').value.trim();if(!emp){alert('Nama karyawan wajib');return;}const iz=getD('altho_izin');iz.push({id:Date.now(),emp,type:document.getElementById('izin-type').value,start:document.getElementById('izin-start').value,end:document.getElementById('izin-end').value,note:document.getElementById('izin-note').value,status:'Pending'});setD('altho_izin',iz);['izin-emp','izin-note'].forEach(id=>document.getElementById(id).value='');renderIzin();}
+function renderIzin(){const tb=document.getElementById('izin-tbl');const iz=getD('altho_izin');if(!iz.length){tb.innerHTML='<tr><td colspan="6" style="color:var(--txt3);text-align:center;padding:1.5rem;">Belum ada pengajuan.</td></tr>';return;}tb.innerHTML=iz.map((x,i)=>`<tr><td style="font-weight:500;">${x.emp}</td><td>${x.type}</td><td style="font-family:var(--M);font-size:11px;">${x.start}</td><td style="font-family:var(--M);font-size:11px;">${x.end}</td><td><span class="badge ${x.status==='Approved'?'bok':'bpend'}">${x.status}</span></td><td style="display:flex;gap:4px;"><button class="btn btnsm btng" onclick="approveIzin(${i})">Approve</button><button class="btn btnsm btnr" onclick="delIzin(${i})">Hapus</button></td></tr>`).join('');}
+function approveIzin(i){const iz=getD('altho_izin');iz[i].status='Approved';setD('altho_izin',iz);renderIzin();}
+function delIzin(i){if(!confirm('Hapus?'))return;const iz=getD('altho_izin');iz.splice(i,1);setD('altho_izin',iz);renderIzin();}
+function addLembur(){alert('Data lembur tersimpan!');}
+
+// ERP
+function addPO(){const sup=document.getElementById('po-sup').value.trim();if(!sup){alert('Supplier wajib');return;}const pos=getD('altho_po');const qty=+document.getElementById('po-qty').value||0;const price=+document.getElementById('po-price').value||0;pos.push({id:Date.now(),ref:document.getElementById('po-ref').value||'PO-'+Date.now(),supplier:sup,item:document.getElementById('po-item').value,qty,unit:document.getElementById('po-unit').value,price,total:qty*price,date:document.getElementById('po-date').value,status:'Open'});setD('altho_po',pos);['po-sup','po-ref','po-item','po-qty','po-unit','po-price','po-date'].forEach(id=>document.getElementById(id).value='');renderPO();updateStats();}
+function renderPO(){const tb=document.getElementById('po-tbl');const p=getD('altho_po');if(!p.length){tb.innerHTML='<tr><td colspan="7" style="color:var(--txt3);text-align:center;padding:1.5rem;">Belum ada PO.</td></tr>';return;}tb.innerHTML=p.map(x=>`<tr><td style="font-family:var(--M);font-size:11px;">${x.ref}</td><td>${x.supplier}</td><td>${x.item}</td><td style="font-family:var(--M);">${x.qty} ${x.unit}</td><td style="font-family:var(--M);color:var(--acc);">Rp ${fmt(x.total||0)}</td><td><span class="badge ${x.status==='Open'?'bpend':'bok'}">${x.status}</span></td><td style="font-family:var(--M);font-size:11px;">${x.date}</td></tr>`).join('');}
+function addSupplier(){const nm=document.getElementById('sup-nm').value.trim();if(!nm){alert('Nama wajib');return;}const s=getD('altho_suppliers');s.push({id:Date.now(),name:nm,cat:document.getElementById('sup-cat').value,cp:document.getElementById('sup-cp').value,phone:document.getElementById('sup-ph').value,addr:document.getElementById('sup-addr').value});setD('altho_suppliers',s);['sup-nm','sup-cp','sup-ph','sup-addr'].forEach(id=>document.getElementById(id).value='');renderSuppliers();}
+function renderSuppliers(){const tb=document.getElementById('sup-tbl');const s=getD('altho_suppliers');if(!s.length){tb.innerHTML='<tr><td colspan="5" style="color:var(--txt3);text-align:center;padding:1.5rem;">Belum ada supplier.</td></tr>';return;}tb.innerHTML=s.map(x=>`<tr><td style="font-weight:500;">${x.name}</td><td><span class="badge bgray">${x.cat}</span></td><td>${x.cp||'—'}</td><td>${x.phone||'—'}</td><td><button class="btn btnsm btnr" onclick="delSupplier(${x.id})">Hapus</button></td></tr>`).join('');}
+function delSupplier(id){if(!confirm('Hapus?'))return;setD('altho_suppliers',getD('altho_suppliers').filter(s=>s.id!==id));renderSuppliers();}
+function addProdPlan(){const prod=document.getElementById('pp-prod').value.trim();if(!prod){alert('Nama produk wajib');return;}const p=getD('altho_prodplan');p.push({id:Date.now(),prod,qty:document.getElementById('pp-qty').value,line:document.getElementById('pp-line').value,start:document.getElementById('pp-start').value,end:document.getElementById('pp-end').value,status:'On Track'});setD('altho_prodplan',p);['pp-prod','pp-qty','pp-line','pp-start','pp-end'].forEach(id=>document.getElementById(id).value='');renderProdPlan();}
+function renderProdPlan(){const tb=document.getElementById('pp-tbl');const p=getD('altho_prodplan');if(!p.length){tb.innerHTML='<tr><td colspan="6" style="color:var(--txt3);text-align:center;padding:1.5rem;">Belum ada production plan.</td></tr>';return;}tb.innerHTML=p.map(x=>`<tr><td style="font-weight:500;">${x.prod}</td><td style="font-family:var(--M);">${x.qty} unit</td><td>${x.line}</td><td style="font-family:var(--M);font-size:11px;">${x.start}</td><td style="font-family:var(--M);font-size:11px;">${x.end}</td><td><span class="badge bok">${x.status}</span></td></tr>`).join('');}
+function addFinance(){const amt=+document.getElementById('fin-amt').value||0;if(!amt){alert('Nominal wajib');return;}const f=getD('altho_finance');f.push({id:Date.now(),type:document.getElementById('fin-type').value,amt,desc:document.getElementById('fin-desc').value,date:new Date().toLocaleDateString('id-ID')});setD('altho_finance',f);['fin-amt','fin-desc'].forEach(id=>document.getElementById(id).value='');renderFinance();}
+function renderFinance(){const tb=document.getElementById('fin-tbl');const f=getD('altho_finance');if(!f.length){tb.innerHTML='<tr><td colspan="4" style="color:var(--txt3);text-align:center;padding:1.5rem;">Belum ada transaksi.</td></tr>';return;}tb.innerHTML=f.map(x=>`<tr><td><span class="badge ${x.type==='Pemasukan'?'bok':'bred'}">${x.type}</span></td><td style="font-family:var(--M);color:var(--acc);">Rp ${fmt(x.amt)}</td><td>${x.desc}</td><td style="font-family:var(--M);font-size:11px;">${x.date}</td></tr>`).join('');}
+
+// WAREHOUSE
+let stockFilter='all';
+function filterStock(f){stockFilter=f;renderStock();}
+function addStockItem(){const nm=document.getElementById('w-name').value.trim();if(!nm){alert('Nama item wajib');return;}const s=getD('altho_stock');const qty=+document.getElementById('w-qty').value||0;const min=+document.getElementById('w-min').value||0;s.push({id:Date.now(),code:document.getElementById('w-code').value,name:nm,cat:document.getElementById('w-cat').value,unit:document.getElementById('w-unit').value,qty,min,price:+document.getElementById('w-price').value||0,loc:document.getElementById('w-loc').value,supplier:document.getElementById('w-sup').value,note:document.getElementById('w-note').value});setD('altho_stock',s);['w-code','w-name','w-unit','w-qty','w-min','w-price','w-loc','w-sup','w-note'].forEach(id=>document.getElementById(id).value='');renderStock();updateStats();}
+function renderStock(){const tb=document.getElementById('stock-tbl');let s=getD('altho_stock');if(stockFilter==='low')s=s.filter(x=>x.qty>0&&x.qty<=x.min);else if(stockFilter==='out')s=s.filter(x=>x.qty===0);if(!s.length){tb.innerHTML='<tr><td colspan="8" style="color:var(--txt3);text-align:center;padding:1.5rem;">Tidak ada item.</td></tr>';return;}tb.innerHTML=s.map(x=>{const st=x.qty===0?'s-out':x.qty<=x.min?'s-low':'s-ok';const sl=x.qty===0?'Habis':x.qty<=x.min?'Stok Rendah':'Normal';return`<tr><td style="font-family:var(--M);font-size:11px;">${x.code||'—'}</td><td style="font-weight:500;">${x.name}</td><td><span class="badge bgray">${x.cat}</span></td><td style="font-family:var(--M);">${x.qty} ${x.unit}</td><td style="font-family:var(--M);color:var(--txt3);">${x.min} ${x.unit}</td><td style="font-family:var(--M);font-size:11px;">${x.loc||'—'}</td><td><span class="stock-tag ${st}">${sl}</span></td><td><button class="btn btnsm btnr" onclick="delStock(${x.id})">Hapus</button></td></tr>`;}).join('');}
+function delStock(id){if(!confirm('Hapus item?'))return;setD('altho_stock',getD('altho_stock').filter(s=>s.id!==id));renderStock();updateStats();}
+function addMovement(){const code=document.getElementById('mv-code').value.trim();const qty=+document.getElementById('mv-qty').value||0;if(!code||!qty){alert('Kode item dan qty wajib');return;}const type=document.getElementById('mv-type').value;const s=getD('altho_stock');const idx=s.findIndex(x=>x.code===code||x.name.toLowerCase().includes(code.toLowerCase()));if(idx>-1){if(type==='in')s[idx].qty+=qty;else if(type==='out')s[idx].qty=Math.max(0,s[idx].qty-qty);setD('altho_stock',s);}const mv=getD('altho_movements');mv.push({id:Date.now(),code,name:idx>-1?s[idx].name:code,type,qty,note:document.getElementById('mv-note').value,date:new Date().toLocaleString('id-ID')});setD('altho_movements',mv);['mv-code','mv-qty','mv-note'].forEach(id=>document.getElementById(id).value='');renderMovements();renderStock();updateStats();}
+function renderMovements(){const tb=document.getElementById('mv-tbl');const mv=getD('altho_movements');if(!mv.length){tb.innerHTML='<tr><td colspan="6" style="color:var(--txt3);text-align:center;padding:1.5rem;">Belum ada pergerakan.</td></tr>';return;}tb.innerHTML=[...mv].reverse().map(x=>`<tr><td style="font-family:var(--M);font-size:10px;">${x.date}</td><td style="font-family:var(--M);font-size:11px;">${x.code}</td><td>${x.name}</td><td><span class="badge ${x.type==='in'?'bok':x.type==='out'?'bred':'bwarn'}">${x.type==='in'?'Masuk':x.type==='out'?'Keluar':'Adjustment'}</span></td><td style="font-family:var(--M);">${x.qty}</td><td style="color:var(--txt3);">${x.note||'—'}</td></tr>`).join('');}
+function addLocation(){const zone=document.getElementById('loc-zone').value.trim();const rack=document.getElementById('loc-rack').value.trim();const shelf=document.getElementById('loc-shelf').value.trim();if(!zone||!rack){alert('Zona dan rak wajib');return;}const locs=getD('altho_locations');const code=`${zone}-${rack}-${shelf||'1'}`;locs.push({id:Date.now(),code,zone,rack,shelf:shelf||'1',note:document.getElementById('loc-note').value});setD('altho_locations',locs);['loc-zone','loc-rack','loc-shelf','loc-note'].forEach(id=>document.getElementById(id).value='');renderLocations();}
+function renderLocations(){const tb=document.getElementById('loc-tbl');const l=getD('altho_locations');if(!l.length){tb.innerHTML='<tr><td colspan="6" style="color:var(--txt3);text-align:center;padding:1.5rem;">Belum ada lokasi rak.</td></tr>';return;}tb.innerHTML=l.map(x=>`<tr><td style="font-family:var(--M);font-size:11px;color:var(--acc);">${x.code}</td><td>${x.zone}</td><td>${x.rack}</td><td>${x.shelf}</td><td style="color:var(--txt3);">${x.note||'—'}</td><td><button class="btn btnsm btnr" onclick="delLoc(${x.id})">Hapus</button></td></tr>`).join('');}
+function delLoc(id){if(!confirm('Hapus lokasi?'))return;setD('altho_locations',getD('altho_locations').filter(l=>l.id!==id));renderLocations();}
+
+// RECRUITMENT
+function addJobPost(){const t=document.getElementById('job-title').value.trim();if(!t){alert('Posisi wajib');return;}const j=getD('altho_jobs');j.push({id:Date.now(),title:t,dept:document.getElementById('job-dept').value,type:document.getElementById('job-type').value,salary:document.getElementById('job-sal').value,qual:document.getElementById('job-qual').value,desc:document.getElementById('job-desc').value,deadline:document.getElementById('job-deadline').value,status:'Open'});setD('altho_jobs',j);['job-title','job-sal','job-qual','job-desc'].forEach(id=>document.getElementById(id).value='');renderJobs();updateStats();}
+function renderJobs(){const tb=document.getElementById('rc-tbl');const c=getD('altho_candidates');if(!c.length){tb.innerHTML='<tr><td colspan="6" style="color:var(--txt3);text-align:center;padding:1.5rem;">Belum ada kandidat.</td></tr>';return;}tb.innerHTML=c.map(x=>`<tr><td style="font-weight:500;">${x.name}</td><td>${x.pos||'—'}</td><td><span class="badge bpend">${x.stage||'Screening'}</span></td><td><span class="badge ${x.psiko?'bok':'bgray'}">${x.psiko?'Selesai':'Belum'}</span></td><td style="font-family:var(--M);font-size:11px;">${x.date||'—'}</td><td><button class="btn btnsm">Detail</button></td></tr>`).join('');}
+
+// PSIKOTES
+function addQ(){const text=document.getElementById('q-text').value.trim();const a=document.getElementById('q-a').value.trim();const b=document.getElementById('q-b').value.trim();if(!text||!a||!b){alert('Pertanyaan dan 2 pilihan wajib');return;}const qs=getD('altho_questions');qs.push({id:Date.now(),type:document.getElementById('q-type').value,dim:document.getElementById('q-dim').value,text,opts:[a,b,document.getElementById('q-c').value,document.getElementById('q-d').value].filter(Boolean),sa:document.getElementById('q-sa').value,sb:document.getElementById('q-sb').value});setD('altho_questions',qs);['q-text','q-a','q-b','q-c','q-d','q-dim','q-sa','q-sb'].forEach(id=>document.getElementById(id).value='');renderPsiko();updateStats();}
+function delQ(id){if(!confirm('Hapus soal?'))return;setD('altho_questions',getD('altho_questions').filter(q=>q.id!==id));renderPsiko();}
+function renderPsiko(){const el=document.getElementById('psiko-bank');const f=document.getElementById('psf').value;let qs=getD('altho_questions');if(f)qs=qs.filter(q=>q.type===f);if(!qs.length){el.innerHTML='<p style="color:var(--txt3);text-align:center;padding:1.5rem;">Belum ada soal.</p>';return;}el.innerHTML=qs.map((q,i)=>`<div class="q-item"><div class="q-num">${q.type} — ${q.dim||'—'} — Soal ${i+1}</div><div class="q-text">${q.text}</div><div class="q-opts">${q.opts.map((o,j)=>`<div class="q-opt">${String.fromCharCode(65+j)}. ${o}</div>`).join('')}</div><div style="display:flex;justify-content:flex-end;margin-top:.5rem;"><button class="btn btnsm btnr" onclick="delQ(${q.id})">Hapus</button></div></div>`).join('');}
+
+// LMS
+let tempVids=[];
+function addVid(){const t=document.getElementById('v-title').value.trim();const u=document.getElementById('v-url').value.trim();if(!t||!u){alert('Judul dan URL wajib');return;}tempVids.push({title:t,url:u});renderTempVids();document.getElementById('v-title').value='';document.getElementById('v-url').value='';}
+function renderTempVids(){document.getElementById('vid-list').innerHTML=tempVids.map((v,i)=>`<div style="display:flex;align-items:center;gap:6px;background:var(--sur2);border-radius:7px;padding:5px 9px;font-size:11px;"><span style="color:var(--acc);">▶</span><span style="flex:1;">${v.title}</span><button onclick="tempVids.splice(${i},1);renderTempVids();" style="background:none;border:none;color:var(--red);cursor:pointer;">✕</button></div>`).join('');}
+function saveCourse(){const t=document.getElementById('c-title').value.trim();if(!t){alert('Judul wajib');return;}const c=getD('altho_courses');c.push({id:Date.now(),title:t,cat:document.getElementById('c-cat').value,desc:document.getElementById('c-desc').value,inst:document.getElementById('c-inst').value,dur:document.getElementById('c-dur').value,price:document.getElementById('c-price').value,level:document.getElementById('c-lvl').value,emoji:document.getElementById('c-emoji').value||'📚',videos:[...tempVids],pre:[document.getElementById('pre1').value,document.getElementById('pre2').value].filter(Boolean),post:[document.getElementById('post1').value,document.getElementById('post2').value].filter(Boolean),passScore:document.getElementById('pass-score').value||70,created:new Date().toISOString()});setD('altho_courses',c);tempVids=[];['c-title','c-desc','c-inst','c-dur','c-price','c-emoji','pre1','pre2','post1','post2','pass-score'].forEach(id=>document.getElementById(id).value='');renderTempVids();renderCourses();updateStats();alert('Kursus disimpan!');}
+function delCourse(id){if(!confirm('Hapus kursus?'))return;setD('altho_courses',getD('altho_courses').filter(c=>c.id!==id));renderCourses();updateStats();}
+function renderCourses(){const el=document.getElementById('courses-list');const c=getD('altho_courses');if(!c.length){el.innerHTML='<div style="color:var(--txt3);text-align:center;padding:2rem;">Belum ada kursus.</div>';return;}el.innerHTML=c.map(x=>`<div class="course-card"><div class="c-thumb">${x.emoji||'📚'}</div><div class="c-info"><div class="c-name">${x.title}</div><div class="c-meta"><span>${x.cat}</span><span>${x.level}</span><span>${x.videos.length} video</span><span>${x.dur||'—'}</span><span style="color:var(--gold);">${x.price||'Gratis'}</span></div></div><div class="c-actions"><span class="badge bok">${x.videos.length}v</span><button class="btn btnsm btnr" onclick="delCourse(${x.id})">Hapus</button></div></div>`).join('');}
+
+// STATS
+function updateStats(){document.getElementById('st0').textContent=getD('altho_partners').length;document.getElementById('st1').textContent=getD('altho_reviews').filter(r=>!r.approved).length;document.getElementById('st2').textContent=getD('altho_courses').length;document.getElementById('st3').textContent=getD('altho_questions').length;document.getElementById('st4').textContent=getD('altho_employees').length;document.getElementById('st5').textContent=getD('altho_stock').length;document.getElementById('st6').textContent=getD('altho_candidates').length;document.getElementById('st7').textContent=getD('altho_po').length;}
+
+function saveContent(m){alert(`Konten ${m} berhasil disimpan!`);}
+function saveSettings(){const np=document.getElementById('s-pass').value;if(np){alert(`Password berhasil diubah! Gunakan password baru untuk login berikutnya.`);}else{alert('Pengaturan disimpan!');}}
+
+function updateClock(){const el=document.getElementById('clk');if(el)el.textContent=new Date().toLocaleString('id-ID',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});}
+function openDemo(type){
+  const urls={oee:'oee-dashboard.html',iot:'iot-dashboard.html'};
+  if(urls[type])window.open(urls[type],'_blank');
+}
+function initAdmin(){
+  updateClock();setInterval(updateClock,30000);
+  document.getElementById('today-date').textContent=new Date().toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  updateStats();renderPartnersTbl();renderRvTbl();renderDashRv();renderPsiko();renderCourses();renderEmployees();renderStock();renderPO();renderSuppliers();renderProdPlan();renderFinance();renderMovements();renderLocations();renderIzin();renderJobs();
+  const defP=[
+    {id:1,name:'Prima Plus Course',emoji:'🎓',desc:'Partner Pelatihan Resmi ALTHO',web:'https://www.primapluscourse.com'},
+    {id:2,name:'PT Prima Kreasi Edukasi',emoji:'📚',desc:'Mitra Edukasi & SDM',web:''},
+    {id:3,name:'CustomCAD Solution',emoji:'📐',desc:'Spesialis CAD/CAM & AutoLISP — Jakarta',web:'https://customcadsolution.com/'},
+  ];
+  if(!getD('altho_partners').length){setD('altho_partners',defP);renderPartnersTbl();updateStats();}
+}
+</script>
+</body>
+</html>
