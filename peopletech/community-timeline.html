@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALTHO PeopleTech - Community Timeline</title>
+<style>
+:root{
+  --bg:#060810;
+  --bg2:#090c14;
+  --sur:#111827;
+  --brd:rgba(255,255,255,0.06);
+  --txt:#e8edf5;
+  --txt2:#8896b0;
+  --txt3:#4a5a70;
+  --acc:#00d4ff;
+  --pink:#f472b6;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);overflow-x:hidden;}
+header{position:sticky;top:0;z-index:100;background:rgba(6,8,16,0.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--brd);padding:1.5rem 2rem;display:flex;justify-content:space-between;align-items:center;}
+.logo{font-size:20px;font-weight:700;color:var(--pink);}
+.nav-btn{background:var(--pink);color:white;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;font-weight:600;}
+.container{max-width:900px;margin:0 auto;padding:2rem;}
+.hero{background:linear-gradient(135deg,rgba(244,114,182,0.1),rgba(0,212,255,0.1));border:1px solid var(--brd);border-radius:16px;padding:3rem;margin-bottom:3rem;text-align:center;}
+.hero h1{font-size:2.5rem;margin-bottom:1rem;color:var(--pink);}
+.hero p{color:var(--txt2);font-size:1.1rem;}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:3rem;}
+.stat-box{background:var(--sur);border:1px solid var(--brd);border-radius:12px;padding:1.5rem;text-align:center;}
+.stat-value{font-size:2rem;font-weight:700;color:var(--pink);}
+.stat-label{color:var(--txt2);font-size:0.9rem;margin-top:0.5rem;}
+.timeline{position:relative;padding:2rem 0;}
+.timeline::before{content:'';position:absolute;left:30px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--pink),transparent);}
+.event{position:relative;padding-left:80px;margin-bottom:3rem;}
+.event::before{content:'';position:absolute;left:0;top:0;width:60px;height:60px;background:var(--pink);border-radius:50%;border:3px solid var(--bg);display:flex;align-items:center;justify-content:center;font-size:30px;}
+.event-card{background:var(--sur);border:1px solid var(--brd);border-radius:12px;padding:1.5rem;transition:all 0.3s;}
+.event-card:hover{border-color:var(--pink);box-shadow:0 8px 24px rgba(244,114,182,0.1);}
+.event-title{font-size:1.3rem;font-weight:700;margin-bottom:0.5rem;color:var(--pink);}
+.event-date{color:var(--txt3);font-size:0.9rem;margin-bottom:1rem;}
+.event-desc{color:var(--txt2);line-height:1.6;}
+.member-pills{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:1rem;}
+.member-pill{background:rgba(244,114,182,0.1);border:1px solid rgba(244,114,182,0.3);color:var(--pink);padding:4px 12px;border-radius:20px;font-size:0.85rem;}
+.btn-group{display:flex;gap:1rem;justify-content:center;margin:3rem 0;}
+.btn{background:var(--pink);color:white;border:none;border-radius:8px;padding:12px 24px;cursor:pointer;font-weight:600;transition:all 0.3s;}
+.btn:hover{background:#e85ba0;transform:translateY(-2px);}
+footer{background:var(--bg2);border-top:1px solid var(--brd);padding:2rem;text-align:center;color:var(--txt2);margin-top:4rem;}
+@media(max-width:768px){
+  .container{padding:1rem;}
+  .hero h1{font-size:1.8rem;}
+  .timeline::before{left:15px;}
+  .event{padding-left:50px;}
+  .event::before{width:40px;height:40px;left:0;}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">ALTHO Community Timeline</div>
+  <button class="nav-btn" onclick="goHome()">← Kembali</button>
+</header>
+
+<div class="container">
+  <div class="hero">
+    <h1>🤝 Komunitas Bisnis Owner ALTHO</h1>
+    <p>Networking, berbagi pengalaman, dan tumbuh bersama para entrepreneurs sukses</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat-box">
+      <div class="stat-value">2.5K+</div>
+      <div class="stat-label">Members Aktif</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">150+</div>
+      <div class="stat-label">Events Tahunan</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">$50M+</div>
+      <div class="stat-label">Total Revenue</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">95%</div>
+      <div class="stat-label">Growth Rate</div>
+    </div>
+  </div>
+
+  <div class="btn-group">
+    <button class="btn" onclick="filterEvents('all')">📅 Semua Event</button>
+    <button class="btn" onclick="filterEvents('networking')">🤝 Networking</button>
+    <button class="btn" onclick="filterEvents('training')">📚 Training</button>
+    <button class="btn" onclick="filterEvents('milestone')">🏆 Milestone</button>
+  </div>
+
+  <div class="timeline" id="timeline"></div>
+</div>
+
+<footer>
+  <p>© 2025 ALTHO Automation Solutions - Community Platform</p>
+</footer>
+
+<script>
+const events=[
+  {id:1,type:'networking',title:'Grand Meetup Q2 Jakarta',date:'15 Apr 2025',desc:'Pertemuan bulanan komunitas ALTHO di Jakarta Convention Center. Diskusi strategi bisnis dan networking dengan 300+ entrepreneurs.',members:['Budi','Siti','Ahmad','Rini']},
+  {id:2,type:'training',title:'Workshop: Digital Marketing untuk UMKM',date:'20 Apr 2025',desc:'Training intensif 2 hari tentang strategi digital marketing yang efektif untuk scale up bisnis. Trainer dari Raksasa Tech Indonesia.',members:['Eko','Maya','Doni']},
+  {id:3,type:'milestone',title:'Member Baru: PT Maju Sejahtera',date:'10 Apr 2025',desc:'Selamat bergabung dengan komunitas ALTHO! PT Maju Sejahtera dengan revenue 5M+ per bulan. Mari kita grow together!',members:[]},
+  {id:4,type:'networking',title:'Breakfast Networking Surabaya',date:'22 Mar 2025',desc:'Casual networking pagi di Surabaya untuk member dari Jawa Timur. Berbagi tips dan trik sukses di industri masing-masing.',members:['Yudi','Fira','Bambang']},
+  {id:5,type:'training',title:'Webinar: Fintech & Payment Solutions',date:'18 Mar 2025',desc:'Expert talk tentang integrasi fintech dan solusi pembayaran digital untuk meningkatkan efisiensi operasional bisnis Anda.',members:['Tara','Rio']},
+  {id:6,type:'milestone',title:'Achievement: Rp 100M Revenue Club',date:'5 Mar 2025',desc:'Apresiasi untuk 25 member komunitas yang berhasil mencapai omset 100 miliar rupiah. Inspirasi untuk semua!',members:[]}
+];
+
+function renderTimeline(filter='all'){
+  const filtered=events.filter(e=>filter==='all'||e.type===filter);
+  const timeline=document.getElementById('timeline');
+  timeline.innerHTML=filtered.map((e,i)=>`
+    <div class="event">
+      <div class="event-card">
+        <div class="event-title">${e.title}</div>
+        <div class="event-date">📅 ${e.date}</div>
+        <div class="event-desc">${e.desc}</div>
+        ${e.members.length>0?`<div class="member-pills">${e.members.map(m=>`<span class="member-pill">👤 ${m}</span>`).join('')}</div>`:''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterEvents(type){
+  renderTimeline(type);
+}
+
+function goHome(){window.location.href='/ALTHO-Automation/';}
+
+renderTimeline();
+</script>
+</body>
+</html>
