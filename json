@@ -1,0 +1,58 @@
+{
+  "name": "ALTHO Automation Solutions",
+  "short_name": "ALTHO",
+  "description": "Ekosistem digital industri terlengkap — AI, IoT, OEE, ERP, Vision, hingga Career Intelligence",
+  "start_url": "/ALTHO-Automation/",
+  "display": "standalone",
+  "background_color": "#060810",
+  "theme_color": "#00d4ff",
+  "orientation": "portrait-primary",
+  "scope": "/ALTHO-Automation/",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23060810' width='192' height='192'/><text x='50%' y='50%' font-size='120' fill='%2300d4ff' text-anchor='middle' dominant-baseline='middle' font-weight='bold' font-family='Arial'>✦</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect fill='%23060810' width='512' height='512'/><text x='50%' y='50%' font-size='320' fill='%2300d4ff' text-anchor='middle' dominant-baseline='middle' font-weight='bold' font-family='Arial'>✦</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "business"],
+  "shortcuts": [
+    {
+      "name": "Career AI - Psikotes",
+      "short_name": "Psikotes",
+      "description": "Akses Career AI untuk psikotes dan konsultasi karir",
+      "url": "/ALTHO-Automation/peopletech/psychotest-dashboard.html",
+      "icons": [{
+        "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23f472b6' width='192' height='192'/><text x='50%' y='50%' font-size='120' fill='white' text-anchor='middle' dominant-baseline='middle'>👥</text></svg>",
+        "sizes": "192x192"
+      }]
+    },
+    {
+      "name": "Community Timeline",
+      "short_name": "Komunitas",
+      "description": "Lihat timeline komunitas bisnis owner",
+      "url": "/ALTHO-Automation/peopletech/community-timeline.html",
+      "icons": [{
+        "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%2300d4ff' width='192' height='192'/><text x='50%' y='50%' font-size='120' fill='white' text-anchor='middle' dominant-baseline='middle'>🤝</text></svg>",
+        "sizes": "192x192"
+      }]
+    },
+    {
+      "name": "IoT Dashboard",
+      "short_name": "IoT",
+      "description": "Monitor sistem IoT industri real-time",
+      "url": "/ALTHO-Automation/iot-dashboard.html",
+      "icons": [{
+        "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%234a9eff' width='192' height='192'/><text x='50%' y='50%' font-size='120' fill='white' text-anchor='middle' dominant-baseline='middle'>📡</text></svg>",
+        "sizes": "192x192"
+      }]
+    }
+  ]
+}
