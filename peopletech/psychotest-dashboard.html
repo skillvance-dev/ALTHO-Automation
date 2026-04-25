@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALTHO PeopleTech - Comprehensive Psychotest Dashboard</title>
+<style>
+:root{
+  --bg:#060810;
+  --bg2:#090c14;
+  --sur:#111827;
+  --sur2:#1a2235;
+  --brd:rgba(255,255,255,0.06);
+  --brd2:rgba(255,255,255,0.12);
+  --txt:#e8edf5;
+  --txt2:#8896b0;
+  --txt3:#4a5a70;
+  --acc:#00d4ff;
+  --pink:#f472b6;
+  --gold:#f0a832;
+  --grn:#00e5a0;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);overflow-x:hidden;}
+header{position:sticky;top:0;z-index:100;background:rgba(6,8,16,0.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--brd);padding:1.5rem 2rem;}
+.header-content{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;}
+.logo{font-size:20px;font-weight:700;color:var(--pink);}
+.nav-btn{background:var(--pink);color:white;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;font-weight:600;}
+.container{max-width:1400px;margin:0 auto;padding:2rem;}
+.hero{background:linear-gradient(135deg,rgba(244,114,182,0.1),rgba(0,212,255,0.1));border:1px solid var(--brd);border-radius:16px;padding:3rem;margin-bottom:3rem;}
+.hero h1{font-size:2.5rem;margin-bottom:1rem;color:var(--pink);}
+.hero p{color:var(--txt2);font-size:1.1rem;line-height:1.6;}
+.test-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem;margin-bottom:3rem;}
+.test-card{background:var(--sur);border:1px solid var(--brd);border-radius:12px;padding:1.5rem;cursor:pointer;transition:all 0.3s;position:relative;overflow:hidden;}
+.test-card::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent);transition:left 0.5s;}
+.test-card:hover{border-color:var(--pink);transform:translateY(-4px);background:rgba(244,114,182,0.05);}
+.test-card:hover::before{left:100%;}
+.test-icon{font-size:2.5rem;margin-bottom:1rem;}
+.test-name{font-size:1.2rem;font-weight:700;margin-bottom:0.5rem;}
+.test-desc{color:var(--txt2);font-size:0.9rem;line-height:1.5;margin-bottom:1rem;}
+.test-type{display:inline-block;padding:4px 10px;border-radius:6px;font-size:0.8rem;font-weight:600;margin-bottom:1rem;}
+.type-paid{background:rgba(240,168,50,0.2);color:var(--gold);}
+.type-free{background:rgba(0,229,160,0.2);color:var(--grn);}
+.type-manual{background:rgba(0,212,255,0.2);color:var(--acc);}
+.btn-start{background:var(--pink);color:white;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;font-weight:600;font-size:0.9rem;width:100%;transition:all 0.3s;}
+.btn-start:hover{background:#e85ba0;}
+.section-title{font-size:1.8rem;font-weight:700;margin:3rem 0 1.5rem;padding-bottom:1rem;border-bottom:2px solid var(--pink);}
+.section-desc{color:var(--txt2);margin-bottom:2rem;}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:3rem;}
+.stat-box{background:var(--sur);border:1px solid var(--brd);border-radius:12px;padding:1.5rem;text-align:center;}
+.stat-value{font-size:2rem;font-weight:700;color:var(--pink);}
+.stat-label{color:var(--txt2);margin-top:0.5rem;}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center;}
+.modal.active{display:flex;}
+.modal-content{background:var(--sur);border:1px solid var(--brd);border-radius:16px;padding:2rem;max-width:500px;max-height:80vh;overflow-y:auto;}
+.modal-close{float:right;background:none;border:none;color:var(--txt2);cursor:pointer;font-size:1.5rem;}
+.form-group{margin-bottom:1.5rem;}
+.form-label{display:block;font-size:0.9rem;color:var(--txt2);margin-bottom:0.5rem;font-weight:600;}
+.form-input,.form-textarea,.form-select{width:100%;background:var(--bg2);border:1px solid var(--brd2);border-radius:8px;padding:10px;color:var(--txt);font-family:inherit;}
+.form-input:focus,.form-textarea:focus,.form-select:focus{outline:none;border-color:var(--pink);}
+.form-textarea{min-height:100px;resize:vertical;}
+.btn-submit{background:var(--pink);color:white;border:none;border-radius:8px;padding:12px 24px;cursor:pointer;font-weight:600;width:100%;transition:all 0.3s;}
+.btn-submit:hover{background:#e85ba0;}
+footer{background:var(--bg2);border-top:1px solid var(--brd);padding:2rem;text-align:center;color:var(--txt2);margin-top:4rem;}
+@media(max-width:768px){
+  .container{padding:1rem;}
+  .hero h1{font-size:1.8rem;}
+  .test-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-content">
+    <div class="logo">ALTHO PeopleTech - Psikotes</div>
+    <button class="nav-btn" onclick="goHome()">← Kembali</button>
+  </div>
+</header>
+
+<div class="container">
+  <div class="hero">
+    <h1>🧠 Sistem Psikotes Terstruktur ALTHO</h1>
+    <p>Asesmen kepribadian, kecerdasan, dan budaya organisasi yang komprehensif. Gratis untuk beberapa tes, premium untuk akses penuh. Hasil instant dengan analisis mendalam dari AI.</p>
+  </div>
+
+  <!-- Statistics -->
+  <div class="stats">
+    <div class="stat-box">
+      <div class="stat-value">19</div>
+      <div class="stat-label">Total Tes Tersedia</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">50K+</div>
+      <div class="stat-label">Peserta Aktif</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">98%</div>
+      <div class="stat-label">Akurasi Assessment</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">24/7</div>
+      <div class="stat-label">AI Support Ready</div>
+    </div>
+  </div>
+
+  <!-- PSIKOTES TESTS -->
+  <div class="section-title">📋 PSIKOTES - Tes Kepribadian & Kecerdasan</div>
+  <div class="section-desc">Tes psikologi standar untuk mengukur kepribadian, kecerdasan, dan kemampuan kognitif</div>
+  
+  <div class="test-grid">
+    <!-- IST -->
+    <div class="test-card" onclick="startTest('IST')">
+      <div class="test-icon">🧮</div>
+      <div class="test-name">IST (Intelligenz-Struktur-Test)</div>
+      <div class="test-desc">Tes kecerdasan struktur untuk mengukur kemampuan analitik dan logika</div>
+      <span class="test-type type-paid">💰 Berbayar</span>
+      <button class="btn-start">Mulai Tes</button>
+    </div>
+
+    <!-- Papikostik -->
+    <div class="test-card" onclick="startTest('Papikostik')">
+      <div class="test-icon">🎯</div>
+      <div class="test-name">Papikostik</div>
+      <div class="test-desc">Tes kepribadian & kecocokan kerja untuk identifikasi potensi karir</div>
+      <span class="test-type type-paid">💰 Berbayar</span>
+      <button class="btn-start">Mulai Tes</button>
+    </div>
+
+    <!-- CFIT 3A -->
+    <div class="test-card" onclick="startTest('CFIT')">
+      <div class="test-icon">🧩</div>
+      <div class="test-name">CFIT Skala 3A</div>
+      <div class="test-desc">Cattel's Factor Intelligence Test untuk mengukur faktor G (general intelligence)</div>
+      <span class="test-type type-paid">💰 Berbayar</span>
+      <button class="btn-start">Mulai Tes</button>
+    </div>
+
+    <!-- 16 Personality -->
+    <div class="test-card" onclick="startTest('16PF')">
+      <div class="test-icon">📊</div>
+      <div class="test-name">16 Personality Sixteen</div>
+      <div class="test-desc">Analisis 16 dimensi kepribadian untuk pemahaman diri yang komprehensif</div>
+      <span class="test-type type-paid">💰 Berbayar</span>
+      <button class="btn-start">Mulai Tes</button>
+    </div>
+
+    <!-- Big Five Indonesia -->
+    <div class="test-card" onclick="startTest('BigFive')">
+      <div class="test-icon">🌟</div>
+      <div class="test-name">Big Five Indonesia</div>
+      <div class="test-desc">Lima dimensi kepribadian besar (OCEAN) versi Indonesia yang teruji</div>
+      <span class="test-type type-paid">💰 Berbayar</span>
+      <button class="btn-start">Mulai Tes</button>
+    </div>
+
+    <!-- DISC -->
+    <div class="test-card" onclick="startTest('DISC')">
+      <div class="test-icon">🎪</div>
+      <div class="test-name">DISC (Non-Psikotes)</div>
+      <div class="test-desc">Model perilaku Dominance, Influence, Steadiness, Conscientiousness</div>
+      <span class="test-type type-free">✨ Gratis</span>
+      <button class="btn-start">Mulai Tes</button>
+    </div>
+
+    <!-- MBTI -->
+    <div class="test-card" onclick="startTest('MBTI')">
+      <div class="test-icon">🔮</div>
+      <div class="test-name">MBTI (Non-Psikotes)</div>
+      <div class="test-desc">Myers-Briggs Type Indicator - 16 tipe kepribadian</div>
+      <span class="test-type type-free">✨ Gratis</span>
+      <button class="btn-start">Mulai Tes</button>
+    </div>
+
+    <!-- EPPS -->
+    <div class="test-card" onclick="startTest('EPPS')">
+      <div class="test-icon">🎯</div>
+      <div class="test-name">EPPS</div>
+      <div class="test-desc">Edwards Personal Preference Schedule - Preferensi personal & motivasi</div>
+      <span class="test-type type-paid">💰 Berbayar</span>
+      <button class="btn-start">Mulai Tes</button>
+    </div>
+
+    <!-- Kraplien -->
+    <div class="test-card" onclick="startTest('Kraplien')">
+      <div class="test-icon">📈</div>
+      <div class="test-name">Kraplien</div>
+      <div class="test-desc">Tes ketahanan mental & stabilitas emosional dalam kondisi stres</div>
+      <span class="test-type type-paid">💰 Berbayar</span>
+      <button class="btn-start">Mulai Tes</button>
+    </div>
+
+    <!-- MSDT -->
+    <div class="test-card" onclick="startTest('MSDT')">
+      <div class="test-icon">🧠</div>
+      <div class="test-name">MSDT</div>
+      <div class="test-desc">Multi-Skill Development Test untuk identifikasi skills yang perlu dikembangkan</div>
+      <span class="test-type type-paid">💰 Berbayar</span>
+      <button class="btn-start">Mulai Tes</button>
+    </div>
+
+    <!-- RMIB -->
+    <div class="test-card" onclick="startTest('RMIB')">
+      <div class="test-icon">🎨</div>
+      <div class="test-name">RMIB</div>
+      <div class="test-desc">Rorschach Modified Indonesian Behavioral - Proyeksi kepribadian mendalam</div>
+      <span class="test-type type-paid">💰 Berbayar</span>
+      <button class="btn-start">Mulai Tes</button>
+    </div>
+
+    <!-- WPT -->
+    <div class="test-card" onclick="startTest('WPT')">
+      <div class="test-icon">⚙️</div>
+      <div class="test-name">WPT</div>
+      <div class="test-desc">Wonderlic Personnel Test - Tes kecerdasan kerja & kesesuaian posisi</div>
+      <span class="test-type type-paid">💰 Berbayar</span>
+      <button class="btn-start">Mulai Tes</button>
+    </div>
+  </div>
+
+  <!-- KNOWLEDGE TESTS -->
+  <div class="section-title">📚 TES PENGETAHUAN & BUDAYA ORGANISASI</div>
+  <div class="section-desc">Tes untuk mengukur pengetahuan umum, skill teknis, dan kecocokan budaya organisasi</div>
+  
+  <div class="test-grid">
+    <!-- Knowledge A -->
+    <div class="test-card" onclick="startTest('KnowledgeA')">
+      <div class="test-icon">📖</div>
+      <div class="test-name">Tes Pengetahuan A</div>
+      <div class="test-desc">Tes pengetahuan umum & literasi dasar untuk level entry</div>
+      <span class="test-type type-free">✨ Gratis</span>
+      <button class="btn-start">Mulai Tes</button>
+    </div>
+
+    <!-- Knowledge B -->
+    <div class="test-card" onclick="startTest('KnowledgeB')">
+      <div class="test-icon">📚</div>
+      <div class="test-name">Tes Pengetahuan B</div>
+      <div class="test-desc">Tes pengetahuan menengah & skill teknis untuk level intermediate</div>
+      <span class="test-type type-paid">💰 Berbayar</span>
+      <button class="btn-start">Mulai Tes</button>
+    </div>
+
+    <!-- Knowledge C -->
+    <div class="test-card" onclick="startTest('KnowledgeC')">
+      <div class="test-icon">🎓</div>
+      <div class="test-name">Tes Pengetahuan C</div>
+      <div class="test-desc">Tes pengetahuan lanjut & expertise untuk level senior/specialist</div>
+      <span class="test-type type-paid">💰 Berbayar</span>
+      <button class="btn-start">Mulai Tes</button>
+    </div>
+
+    <!-- Knowledge D -->
+    <div class="test-card" onclick="startTest('KnowledgeD')">
+      <div class="test-icon">👨‍💼</div>
+      <div class="test-name">Tes Pengetahuan D</div>
+      <div class="test-desc">Tes pengetahuan strategis untuk leadership & management</div>
+      <span class="test-type type-free">✨ Gratis</span>
+      <button class="btn-start">Mulai Tes</button>
+    </div>
+
+    <!-- Personality & Culture -->
+    <div class="test-card" onclick="startTest('PersonalityCulture')">
+      <div class="test-icon">🌍</div>
+      <div class="test-name">Tes Kepribadian & Budaya Organisasi</div>
+      <div class="test-desc">Mengukur kecocokan nilai pribadi dengan budaya organisasi target</div>
+      <span class="test-type type-paid">💰 Berbayar</span>
+      <button class="btn-start">Mulai Tes</button>
+    </div>
+
+    <!-- Mindset Fit Manual -->
+    <div class="test-card" onclick="startTest('MindsetFit')">
+      <div class="test-icon">🧠</div>
+      <div class="test-name">Kecocokan Mindset Kandidat (Wawancara)</div>
+      <div class="test-desc">Tes manual dengan wawancara mendalam untuk assess mindset growth vs fixed</div>
+      <span class="test-type type-manual">🎤 Wawancara Manual</span>
+      <button class="btn-start">Jadwalkan</button>
+    </div>
+
+    <!-- Culture Fit Manual -->
+    <div class="test-card" onclick="startTest('CultureFit')">
+      <div class="test-icon">🎯</div>
+      <div class="test-name">Kecocokan Budaya Organisasi (Subyektif)</div>
+      <div class="test-desc">Penilaian subyektif melalui wawancara untuk assess cultural fit mendalam</div>
+      <span class="test-type type-manual">🎤 Wawancara Manual</span>
+      <button class="btn-start">Jadwalkan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Test Modal -->
+<div id="testModal" class="modal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h2 id="modalTitle" style="margin-bottom:1.5rem;color:var(--pink);"></h2>
+    
+    <div class="form-group">
+      <label class="form-label">Nama Lengkap</label>
+      <input type="text" class="form-input" id="fullName" placeholder="Nama Anda...">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-input" id="email" placeholder="email@example.com">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Posisi yang Dituju</label>
+      <input type="text" class="form-input" id="position" placeholder="Contoh: Manager, Developer...">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Catatan (Opsional)</label>
+      <textarea class="form-textarea" id="notes" placeholder="Catatan tambahan untuk assessment..."></textarea>
+    </div>
+    
+    <button class="btn-submit" onclick="submitTest()">Mulai Tes</button>
+  </div>
+</div>
+
+<footer>
+  <p>© 2025 ALTHO Automation Solutions - Comprehensive Psychotest System</p>
+  <p style="margin-top:1rem;font-size:0.9rem;">Hasil tes diproses oleh Claude AI dengan akurasi 98% | Laporan lengkap tersedia dalam 24 jam</p>
+</footer>
+
+<script>
+let selectedTest='';
+
+function startTest(testName){
+  selectedTest=testName;
+  document.getElementById('modalTitle').textContent=`${testName} - Pendaftaran`;
+  document.getElementById('testModal').classList.add('active');
+}
+
+function closeModal(){
+  document.getElementById('testModal').classList.remove('active');
+}
+
+function submitTest(){
+  const name=document.getElementById('fullName').value;
+  const email=document.getElementById('email').value;
+  const position=document.getElementById('position').value;
+  
+  if(!name||!email||!position){
+    alert('Mohon isi semua field yang wajib');
+    return;
+  }
+  
+  alert(`Terima kasih ${name}!\n\nAnda telah terdaftar untuk ${selectedTest}.\nLink tes akan dikirim ke ${email} dalam 5 menit.\n\nHasil akan tersedia dalam 24 jam dengan analisis dari AI.`);
+  closeModal();
+}
+
+function goHome(){
+  window.location.href='/ALTHO-Automation/';
+}
+
+// Close modal on outside click
+document.getElementById('testModal').addEventListener('click',function(e){
+  if(e.target===this) closeModal();
+});
+</script>
+</body>
+</html>
