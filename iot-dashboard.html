@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ALTHO IoT - Hotel Dashboard</title>
+<title>ALTHO IoT - Dual Dashboard</title>
 <style>
 :root{
   --bg:#060810;
@@ -56,16 +56,27 @@ footer{background:var(--bg2);border-top:1px solid var(--brd);padding:2rem;text-a
 </head>
 <body>
 <header>
-  <div class="logo">ALTHO IoT - Hotel Model</div>
+  <div class="logo">ALTHO IoT - Dual Model</div>
   <button class="nav-btn" onclick="goHome()">← Kembali</button>
 </header>
 
 <div class="container">
   <div class="hero">
-    <h1>🏨 Smart Hotel IoT Management</h1>
-    <p>Monitoring real-time untuk seluruh kamar hotel dengan sensor pintar</p>
+    <h1>🏨 + 🏭 Smart IoT Dual Dashboard</h1>
+    <p>Dua model IoT dalam satu halaman: model kamar hotel dan model industri pabrik. Model hotel tetap tersedia.</p>
   </div>
 
+
+
+  <div class="section">
+    <div class="section-title">🔀 Pilih Model IoT</div>
+    <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+      <button class="nav-btn" onclick="setModel('hotel')">Hotel IoT Model</button>
+      <button class="nav-btn" style="background:transparent;color:var(--acc);border:1px solid var(--acc);" onclick="setModel('factory')">Factory IoT Model</button>
+    </div>
+  </div>
+
+  <div id="hotelModel">
   <!-- Overall Stats -->
   <div class="section">
     <div class="section-title">📊 Status Keseluruhan</div>
@@ -161,8 +172,20 @@ footer{background:var(--bg2);border-top:1px solid var(--brd);padding:2rem;text-a
   </div>
 </div>
 
+  <div id="factoryModel" style="display:none;">
+    <div class="section">
+      <div class="section-title">🏭 Factory IoT - Ringkasan Operasional</div>
+      <div class="grid">
+        <div class="card"><div class="card-title">Line Utilization</div><div class="stat"><span class="stat-label">Line A</span><span class="stat-value">92%</span></div><div class="stat"><span class="stat-label">Line B</span><span class="stat-value">88%</span></div></div>
+        <div class="card"><div class="card-title">⚡ Power Monitoring</div><div class="stat"><span class="stat-label">Beban Saat Ini</span><span class="stat-value" style="color:var(--gold);">1.24 MW</span></div><div class="stat"><span class="stat-label">Peak Hari Ini</span><span class="stat-value">1.41 MW</span></div></div>
+        <div class="card"><div class="card-title">🔧 Predictive Maintenance</div><div class="stat"><span class="stat-label">Aset Risk High</span><span class="stat-value" style="color:var(--red);">3</span></div><div class="stat"><span class="stat-label">Work Order</span><span class="stat-value" style="color:var(--grn);">12</span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <footer>
-  <p>© 2025 ALTHO Automation Solutions - Smart Hotel IoT Management</p>
+  <p>© 2026 ALTHO Automation Solutions - Smart IoT Dual Model (Hotel + Factory)</p>
 </footer>
 
 <script>
@@ -196,6 +219,12 @@ function renderRooms(){
 }
 
 renderRooms();
+
+function setModel(model){
+  document.getElementById('hotelModel').style.display=model==='hotel'?'block':'none';
+  document.getElementById('factoryModel').style.display=model==='factory'?'block':'none';
+}
+
 </script>
 </body>
 </html>
